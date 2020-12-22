@@ -706,7 +706,7 @@ void print_domains(Graph& query, Graph& target, sbitset* node_domains,	EdgeDomai
 	for(int n=0; n<query.nof_nodes; n++){
 		for(int ni=0; ni<query.out_adj_sizes[n]; ni++){
 			int eid = edge_domains.pattern_out_adj_eids[n][ni];
-			std::cout<<"edge domain: "<<n<<"-"<<query.out_adj_list[n][ni]<<":"<<eid<<":"<<edge_domains.domains[eid].size()<<"\n";
+			std::cout<<"edge domain: "<<n<<"-"<<query.out_adj_list[n][ni]<<":eid "<<eid<<":"<<edge_domains.domains[eid].size()<<"\n";
 		}
 	}
 

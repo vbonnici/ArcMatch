@@ -73,6 +73,7 @@ public:
 			o_query_e_weights[i] = new double[ssg.out_adj_sizes[i]];
 			for(int j=0; j<ssg.out_adj_sizes[i]; j++){
 				o_query_e_weights[i][j] = 
+				
 				//1.0-(
 					((double)edge_domains.domains[edge_domains.pattern_out_adj_eids[i][j]].size())
 				//	/ 
@@ -86,6 +87,7 @@ public:
 			i_query_e_weights[i] = new double[ssg.in_adj_sizes[i]];
 			for(int j=0; j<ssg.in_adj_sizes[i]; j++){
 				i_query_e_weights[i][j] = 
+				
 				//1.0-(
 					((double)edge_domains.domains[edge_domains.pattern_in_adj_eids[i][j]].size())
 				//	/ 

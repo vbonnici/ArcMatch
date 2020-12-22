@@ -361,7 +361,8 @@ int match(
 
 						//run the matching phase
 						//std::cout<<"solving...\n";
-						solver->solve_ed();
+						solver->solve_rp();
+						//solver->solve_ed();
 						//solver->solve();
 						//std::cout<<"done\n";
 
