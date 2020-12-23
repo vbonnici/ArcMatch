@@ -285,12 +285,16 @@ int match(
 	std::cout<<"initializing edge domain...\n";
 #endif
 						EdgeDomains edomains;
+						std::cout<<"edomain init\n";
 						init_edomains(*rrg, *query, domains, *edgeComparator, edomains);
 						DomainReduction dr(*query, domains, edomains, rrg->nof_nodes);
-						//dr.reduce_by_paths(6);
-						dr.reduce_by_paths(query->nof_nodes+1);
+						std::cout<<"edomain reduction\n";
+						dr.reduce_by_paths(6);
+						//dr.reduce_by_paths(query->nof_nodes+1);
 
+						std::cout<<"edomain refinement\n";
 						dr.final_refinement();
+						std::cout<<"edomain done\n";
 
 						//print_domains(*query, *rrg, domains,edomains);
 
