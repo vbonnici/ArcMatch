@@ -287,7 +287,8 @@ int match(
 						EdgeDomains edomains;
 						init_edomains(*rrg, *query, domains, *edgeComparator, edomains);
 						DomainReduction dr(*query, domains, edomains, rrg->nof_nodes);
-						dr.reduce_by_paths(6);
+						//dr.reduce_by_paths(6);
+						dr.reduce_by_paths(query->nof_nodes+1);
 
 						dr.final_refinement();
 
@@ -371,6 +372,8 @@ int match(
 						steps += solver->steps;
 						triedcouples += solver->triedcouples;
 						matchedcouples += solver->matchedcouples;
+
+						matchcount += solver->matchcount;
 
 						delete solver;
 						delete mama;

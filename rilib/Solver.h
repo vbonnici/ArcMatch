@@ -63,6 +63,8 @@ public:
 	long triedcouples;
 	long matchedcouples;
 
+	long matchcount;
+
 public:
 
 	Solver(
@@ -88,6 +90,8 @@ public:
 		steps = 0;
 		triedcouples = 0;
 		matchedcouples = 0;
+
+		matchcount = 0;
 	}
 
 	virtual ~Solver(){}
@@ -419,14 +423,15 @@ struct hash_pair {
 
 		cand_ecount_t ce_counter;
 		cand_ecount_t ce_positions;
-		
-		
-		typedef std::set< std::pair<int,int> > ordered_edge_set;
 
 
 #ifdef MDEBUG
 std::cout<<"ORDERED EDGE SETS\n";
 #endif
+
+		typedef std::set< std::pair<int,int> > ordered_edge_set;
+
+		std::cout<<"ORDERED EDGE SETS...\n";
 
 		int **ordered_edge_domains = new int*[edomains.nof_pattern_edges];
 		int *ordered_edge_domains_sizes = new int[edomains.nof_pattern_edges];
@@ -486,6 +491,8 @@ std::cout<<"IN eid: "<<eid<<";k "<<k<<": "<<eit->first<<"-"<<eit->second<<"\n";
 			}
 		}
 
+		std::cout<<"ORDERED EDGE SETS: done\n";
+
 
 		int **f_domains = new int*[nof_sn];
 		for(int si=0; si<nof_sn; si++){
@@ -504,6 +511,7 @@ std::cout<<"IN eid: "<<eid<<";k "<<k<<": "<<eit->first<<"-"<<eit->second<<"\n";
 		int *candidateIT = new int[nof_sn];
 		int *candidateITeid = new int[edomains.nof_pattern_edges];
 		int *candidateITpnode = new int[edomains.nof_pattern_edges];
+		int *candidateITpstate = new int[edomains.nof_pattern_edges];
 		int *candidateITsize = new int[edomains.nof_pattern_edges];
 		for(int i=0; i<nof_sn; i++){
 			candidateIT[i] = -1;
@@ -600,6 +608,7 @@ std::cout<<"single parent: eid "<<candidateITeid[si]<<"; pnode "<<pnode<<"; psta
 						}
 					}
 					candidateITpnode[si] = maxp;
+					candidateITpstate[si] = pstate;
 					candidateITeid[si] = maxe;
 					candidateIT[si] = ce_positions[std::make_pair(maxp, maxe)]  -1;
 					candidateITsize[si] = ordered_edge_domains_sizes[maxe];
@@ -648,6 +657,29 @@ std::cout<<"pCI "<<candidateIT[si]
 						if( !matched[ ordered_edge_domains[candidateITeid[si]][  candidateIT[si] + candidateITsize[si] ] ] ){
 							ci = ordered_edge_domains[candidateITeid[si]][  candidateIT[si] + candidateITsize[si] ];
 							solution[si] = ci;
+							
+							if(mama.edges_sizes[si] > 1){
+								bool checked = true;
+								for(int me=0; me<mama.edges_sizes[si]; me++){
+									if((candidateITpstate[si]!=mama.edges[si][me].source) && (candidateITpstate[si]!=mama.edges[si][me].target)){
+										if(  edomains.domains[ mama.edges[si][me].id ].count( 
+											std::pair<int,int>(solution[mama.edges[si][me].source],solution[mama.edges[si][me].target]) ) ==0 ){
+												checked = false;
+												break;
+										}
+									}
+								}
+								if(checked){
+									break;
+								}
+								else{
+									ci = -1;
+								}
+							}else{
+								break;
+							}
+							
+							/*
 							if(edgesCheck(si, ci, solution, matched)){
 								break;
 							}
@@ -657,6 +689,7 @@ std::cout<<"no edge check\n";
 #endif
 								ci = -1;
 							}
+							*/	
 						}
 #ifdef MDEBUG
 						else{
@@ -695,7 +728,12 @@ std::cout<<"CI "<<ci<<"\n";
 				matchedcouples++;
 
 				if(si == nof_sn -1){
-					matchListener.match(nof_sn, map_state_to_node, solution);
+					//std::cout<<matchListener.matchcount<<"\n";
+					
+					//matchListener.match(nof_sn, map_state_to_node, solution);
+					matchcount++;
+
+
 					psi = si;
 #ifdef FIRST_MATCH_ONLY
 					si = -1;
