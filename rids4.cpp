@@ -56,6 +56,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "MaMaConstrFirstDs.h"
 #include "MaMaConstrFirstEDs.h"
 #include "MaMaFloodCore.h"
+#include "MaMaAngularCoefficient.h"
 
 
 #include "MatchListener.h"
@@ -327,8 +328,9 @@ int match(
 						make_mama_s=start_time();
 						
 						//MatchingMachine* mama = new MaMaConstrFirstDs(*query, domains, domains_size);
-						MatchingMachine* mama = new MaMaConstrFirstEDs(*query, domains, domains_size, edomains);
+						//MatchingMachine* mama = new MaMaConstrFirstEDs(*query, domains, domains_size, edomains);
 						//MatchingMachine* mama = new MaMaFloodCore(*query, domains, domains_size, edomains, query->nof_nodes);
+						MatchingMachine* mama = new MaMaAngularCoefficient(*query, domains, domains_size, edomains);
 
 
 						//std::cout<<"build mm\n";
@@ -366,9 +368,10 @@ int match(
 
 						//run the matching phase
 						//std::cout<<"solving...\n";
-						solver->solve_rp();
+						
+						//solver->solve_rp();
 						//solver->solve_ed();
-						//solver->solve();
+						solver->solve();
 						//std::cout<<"done\n";
 
 						match_t+=end_time(match_s);
