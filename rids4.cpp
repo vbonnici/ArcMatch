@@ -32,10 +32,23 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 
-//#define MDEBUG
+#define MDEBUG
 
 //#define PRINT_MATCHES
 //#define CSV_FORMAT
+
+//#define FIRST_MATCH_ONLY  //if setted, the searching process stops at the first found match
+
+
+//#define MAMA_0 //simple matching machine
+//#define MAMA_FC //mama by centrality flooding
+#define MAMA_AC //matching machine with angular coefficinet
+
+//#define SOLVER_0 //simple solver with edge domains
+//#define SOLVER_ED //simple solver which exploits edge domains
+#define SOLVER_DP //solver with dynamic parent selection
+
+
 
 
 #include <iostream>
@@ -288,6 +301,9 @@ int match(
 						EdgeDomains edomains;
 						std::cout<<"edomain init\n";
 						init_edomains(*rrg, *query, domains, *edgeComparator, edomains);
+
+						//print_domains(*query, *rrg, domains,edomains);
+
 						DomainReduction dr(*query, domains, edomains, rrg->nof_nodes);
 						std::cout<<"edomain reduction\n";
 						dr.reduce_by_paths(6);
@@ -297,7 +313,9 @@ int match(
 						dr.final_refinement();
 						std::cout<<"edomain done\n";
 
-						//print_domains(*query, *rrg, domains,edomains);
+#ifdef MDEBUG
+						print_domains(*query, *rrg, domains,edomains);
+#endif
 
 #ifdef MDEBUG
 	std::cout<<"building matching machine...\n";
@@ -328,9 +346,17 @@ int match(
 						make_mama_s=start_time();
 						
 						//MatchingMachine* mama = new MaMaConstrFirstDs(*query, domains, domains_size);
-						//MatchingMachine* mama = new MaMaConstrFirstEDs(*query, domains, domains_size, edomains);
-						//MatchingMachine* mama = new MaMaFloodCore(*query, domains, domains_size, edomains, query->nof_nodes);
+						#ifdef MAMA_0
+						MatchingMachine* mama = new MaMaConstrFirstEDs(*query, domains, domains_size, edomains);
+						#endif
+
+						#ifdef MAMA_FC
+						MatchingMachine* mama = new MaMaFloodCore(*query, domains, domains_size, edomains, query->nof_nodes);
+						#endif
+						
+						#ifdef MAMA_AC
 						MatchingMachine* mama = new MaMaAngularCoefficient(*query, domains, domains_size, edomains);
+						#endif
 
 
 						//std::cout<<"build mm\n";
@@ -369,9 +395,20 @@ int match(
 						//run the matching phase
 						//std::cout<<"solving...\n";
 						
-						//solver->solve_rp();
-						//solver->solve_ed();
+						#ifdef SOLVER_0
 						solver->solve();
+						#endif
+
+						#ifdef SOLVER_ED
+						solver->solve_ed();
+						#endif
+
+						#ifdef SOLVER_DP
+						solver->solve_rp();
+						#endif
+
+
+
 						//std::cout<<"done\n";
 
 						match_t+=end_time(match_s);

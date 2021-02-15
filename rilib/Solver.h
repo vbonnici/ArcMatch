@@ -257,6 +257,9 @@ public:
 		bool* matched = (bool*) calloc(rgraph.nof_nodes, sizeof(bool));		//indexed by node_id
 
 		for(int i=0; i<nof_sn; i++){
+#ifdef MDEBUG	
+std::cout<<"-----\n";
+#endif
 			if(parent_type[i] == PARENTTYPE_NULL){
 				//std::cout<<"parent type null "<<i<<"\n";
 				int n = map_state_to_node[i];
@@ -657,6 +660,8 @@ std::cout<<"pCI "<<candidateIT[si]
 						if( !matched[ ordered_edge_domains[candidateITeid[si]][  candidateIT[si] + candidateITsize[si] ] ] ){
 							ci = ordered_edge_domains[candidateITeid[si]][  candidateIT[si] + candidateITsize[si] ];
 							solution[si] = ci;
+
+							//std::cout<<"CANDIDATE SI "<<si<<" CI "<<ci<<"\n";
 							
 							if(mama.edges_sizes[si] > 1){
 								bool checked = true;

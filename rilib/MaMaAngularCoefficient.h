@@ -256,7 +256,7 @@ public:
 		}
 
 
-		int max_parent, max_w, n, w;
+		int max_parent, max_w=0, n, w;
 		MAMA_PARENTTYPE max_t;
 
 
@@ -265,6 +265,9 @@ public:
 			max_t = PARENTTYPE_NULL;
 
 			n = map_state_to_node[si];
+#ifdef MDEBUG	
+std::cout<<"PARENTING SI "<<si<<" N "<<n<<"\n";
+#endif
 
 			for(int ni=0; ni<ssg.out_adj_sizes[n]; ni++){
 				nn = ssg.out_adj_list[n][ni];
@@ -273,12 +276,12 @@ public:
 					if(max_parent == -1){
 						max_parent = nn;
 						max_w = w;
-						max_t = PARENTTYPE_OUT;
+						max_t = PARENTTYPE_IN;
 					}
 					else if(max_w > w){
 						max_parent = nn;
 						max_w = w;
-						max_t = PARENTTYPE_OUT;
+						max_t = PARENTTYPE_IN;
 					}
 				}
 			}
@@ -289,19 +292,24 @@ public:
 					if(max_parent == -1){
 						max_parent = nn;
 						max_w = w;
-						max_t = PARENTTYPE_IN;
+						max_t = PARENTTYPE_OUT;
 					}
 					else if(max_w > w){
 						max_parent = nn;
 						max_w = w;
-						max_t = PARENTTYPE_IN;
+						max_t = PARENTTYPE_OUT;
 					}
 				}
 			}
-
 			if(max_parent != -1){
 				parent_state[si] = map_node_to_state[max_parent];
 				parent_type[si] = max_t;
+
+#ifdef MDEBUG	
+std::cout<<"parent N "<<max_parent<<"\n" ;
+std::cout<<"parent SI "<<map_node_to_state[max_parent]<<"\n" ;
+if(max_t == PARENTTYPE_OUT){std::cout<<"OUT\n";}else{std::cout<<"IN\n";}
+#endif
 			}
 		}
 

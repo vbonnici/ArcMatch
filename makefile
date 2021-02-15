@@ -6,6 +6,8 @@ CFLAGS=-std=c++11 -c -O3
 SOURCES= rids4.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 
+EXECUTABLE=rids4
+
 #EXECUTABLE=thindr0
 #first version with original ordering
 
@@ -27,7 +29,7 @@ OBJECTS=$(SOURCES:.cpp=.o)
 #EXECUTABLE=thindr0_mono_ac
 #specific for mono search, angular coefficient matching machine
 
-EXECUTABLE=thindr0_mono_ac_ss
+#EXECUTABLE=thindr0_mono_ac_ss
 #specific for mono search, angular coefficient matching machine, simple solver (no dynamic selection of parent node)
 
 all:	$(SOURCES) $(EXECUTABLE)
