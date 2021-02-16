@@ -664,6 +664,7 @@ std::cout<<"pCI "<<candidateIT[si]
 							//std::cout<<"CANDIDATE SI "<<si<<" CI "<<ci<<"\n";
 							
 							if(mama.edges_sizes[si] > 1){
+
 								bool checked = true;
 								for(int me=0; me<mama.edges_sizes[si]; me++){
 									if((candidateITpstate[si]!=mama.edges[si][me].source) && (candidateITpstate[si]!=mama.edges[si][me].target)){
@@ -674,6 +675,8 @@ std::cout<<"pCI "<<candidateIT[si]
 										}
 									}
 								}
+								if(checked) checked &= edgesCheck(si, ci, solution, matched);
+
 								if(checked){
 									break;
 								}

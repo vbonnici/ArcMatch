@@ -53,3 +53,7 @@ rids4_0_ED
 rids4_AC_DP
 rids4_AC_ED
 graph.ged
+rids4_0_DP_ind
+rids4_AC_DP_ind
+.gitignore
+rids4_AC_ED_ind

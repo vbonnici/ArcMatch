@@ -32,7 +32,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 
-#define MDEBUG
+//#define MDEBUG
 
 //#define PRINT_MATCHES
 //#define CSV_FORMAT
@@ -383,10 +383,10 @@ int match(
 						//prepare the matching phase
 						Solver* solver;
 						switch(matchtype){
-						case MT_ISO:  //a specialized solver for this will be better
 						case MT_MONO:
 							solver = new SubGISolver(*mama, *rrg, *query, *nodeComparator, *edgeComparator, *matchListener, domains, domains_size, edomains);
 							break;
+						case MT_ISO:  //a specialized solver for this will be better
 						case MT_INDSUB:
 							solver = new InducedSubGISolver(*mama, *rrg, *query, *nodeComparator, *edgeComparator, *matchListener, domains, domains_size, edomains);
 							break;

@@ -60,7 +60,7 @@ public:
 //	}
 
 	virtual bool edgesCheck(int si, int ci, int* solution, bool* matched){
-		int rsource, rtarget, source, target, eid;
+		/*int rsource, rtarget, source, target, eid;
 		int ii;
 		for(int me=0; me<mama.edges_sizes[si]; me++){
 			source = mama.edges[si][me].source;
@@ -85,7 +85,8 @@ public:
 			if(ii >= rgraph.out_adj_sizes[rsource]){
 				return false;
 			}
-		}
+		}*/
+		int ii;
 
 		int count = 0;
 		for(ii=0; ii< rgraph.out_adj_sizes[ci]; ii++){

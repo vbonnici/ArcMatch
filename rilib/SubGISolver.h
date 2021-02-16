@@ -60,7 +60,7 @@ public:
 //	}
 
 	virtual bool edgesCheck(int si, int ci, int* solution, bool* matched){
-		int rsource, rtarget, source, target, eid;
+		/*int rsource, rtarget, source, target, eid;
 		int ii;
 		for(int me=0; me<mama.edges_sizes[si]; me++){
 			//std::cout<<"me "<<me<<"\n";
@@ -77,6 +77,7 @@ public:
 				return false;
 			}
 		}
+		*/
 		return true;
 	}
 };
