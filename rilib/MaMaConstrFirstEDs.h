@@ -334,7 +334,7 @@ public:
 						while(nnIT < ssg.out_adj_sizes[ni]){
 							nni = ssg.out_adj_list[ni][nnIT];
 							//weights[nni][1]++;
-							weights[nni][1] += i_query_e_weights[n][nIT];
+							weights[nni][1] += o_query_e_weights[n][nIT];
 							nnIT++;
 						}
 					}

@@ -512,10 +512,18 @@ std::cout<<"IN eid: "<<eid<<";k "<<k<<": "<<eit->first<<"-"<<eit->second<<"\n";
 
 
 		int *candidateIT = new int[nof_sn];
-		int *candidateITeid = new int[edomains.nof_pattern_edges];
+
+		/*int *candidateITeid = new int[edomains.nof_pattern_edges];
 		int *candidateITpnode = new int[edomains.nof_pattern_edges];
 		int *candidateITpstate = new int[edomains.nof_pattern_edges];
-		int *candidateITsize = new int[edomains.nof_pattern_edges];
+		int *candidateITsize = new int[edomains.nof_pattern_edges];*/
+
+		int *candidateITeid = new int[nof_sn];
+		int *candidateITpnode = new int[nof_sn];
+		int *candidateITpstate = new int[nof_sn];
+		int *candidateITsize = new int[nof_sn];
+
+
 		for(int i=0; i<nof_sn; i++){
 			candidateIT[i] = -1;
 		}
