@@ -124,6 +124,8 @@ bool init_domains(
 			return false;
 	}
 
+
+#ifdef NODE_D_CONV
 	bool changes = true;
 	while(changes){
 		changes = false;
@@ -152,7 +154,7 @@ bool init_domains(
 				return false;
 		}
 	}
-
+#endif
 
 	return true;
 
@@ -288,7 +290,14 @@ bool init_edomains(
 								target.out_adj_attrs[ts][ts_n])
 								){
 
-								//std::cout<<pattern_out_adj_eids[ps][ps_n]<<"\t"<<target_out_adj_eids[ts][ts_n]<<"\n";
+
+								//std::cout<<edomains.pattern_out_adj_eids[ps][ps_n]<<"\t"<<edomains.target_out_adj_eids[ts][ts_n]<<"\n";
+								
+								//std::cout<<edomains.pattern_out_adj_eids[ps][ps_n]<<"("<<ps<<","<<pt<<")"<<*((std::string*)pattern.out_adj_attrs[ps][ps_n])
+								//	<<"] -> ("<<ts<<","<<tt<<")"<<*((std::string*)target.out_adj_attrs[ts][ts_n])<<"]"<<"\n";
+
+
+
 								edomains.domains[  edomains.pattern_out_adj_eids[ps][ps_n]  ]
 								.insert(  std::pair<int,int>(ts,tt) );
 								//.set( edomains.target_out_adj_eids[ts][ts_n] , true);
@@ -358,6 +367,7 @@ public:
 
 
 
+#ifdef EDGE_D_CONV
 		if(erased){
 			while(erased){
 				erased = false;
@@ -452,7 +462,7 @@ public:
 			}
 
 		}
-
+#endif
 		return true;
 	};
 
@@ -711,6 +721,36 @@ void print_domains(Graph& query, Graph& target, sbitset* node_domains,	EdgeDomai
 	}
 
 };
+
+
+void print_domains_extended(Graph& query, Graph& target, sbitset* node_domains,	EdgeDomains& edge_domains){
+	std::cout<<"nof query nodes "<< query.nof_nodes<<"\n";
+	for(int i=0; i<query.nof_nodes; i++){
+		//std::cout<<"node domain "<<i<<":"<<node_domains[i].count_ones()<<"\n";
+		//std::cout<<"node domain "<<i<<": ";
+		std::cout<<"node domain "<<i<<":"<<node_domains[i].count_ones()<<": ";
+		for(sbitset::iterator it = node_domains[i].first_ones(); it!=node_domains[i].end(); it.next_ones()){
+			std:cout<<it.first<<" ";
+		}
+		std::cout<<"\n";
+	}
+	for(int n=0; n<query.nof_nodes; n++){
+		for(int ni=0; ni<query.out_adj_sizes[n]; ni++){
+			int eid = edge_domains.pattern_out_adj_eids[n][ni];
+			std::cout<<"edge domain: "<<n<<"-"<<query.out_adj_list[n][ni]<<":eid "<<eid<<":"<<edge_domains.domains[eid].size()<<"\n";
+
+			unordered_edge_set* eset = 
+			&(edge_domains.domains[ eid  ]);
+
+			for(unordered_edge_set::iterator eit = eset->begin(); eit != eset->end();eit++ ){
+				std::cout<<"("<<(*eit).first<<","<<(*eit).second<<")";
+			}
+			std::cout<<"\n";
+		}
+	}
+
+};
+
 
 
 

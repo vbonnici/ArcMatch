@@ -675,13 +675,13 @@ std::cout<<"pCI "<<candidateIT[si]
 
 								bool checked = true;
 								for(int me=0; me<mama.edges_sizes[si]; me++){
-									if((candidateITpstate[si]!=mama.edges[si][me].source) && (candidateITpstate[si]!=mama.edges[si][me].target)){
+									//if((candidateITpstate[si]!=mama.edges[si][me].source) && (candidateITpstate[si]!=mama.edges[si][me].target)){
 										if(  edomains.domains[ mama.edges[si][me].id ].count( 
 											std::pair<int,int>(solution[mama.edges[si][me].source],solution[mama.edges[si][me].target]) ) ==0 ){
 												checked = false;
 												break;
 										}
-									}
+									//}
 								}
 								if(checked) checked &= edgesCheck(si, ci, solution, matched);
 
@@ -747,6 +747,9 @@ std::cout<<"CI "<<ci<<"\n";
 					//std::cout<<matchListener.matchcount<<"\n";
 					
 					//matchListener.match(nof_sn, map_state_to_node, solution);
+					#ifdef PRINT_MATCHES
+					matchListener.match(nof_sn, map_state_to_node, solution);
+					#endif
 					matchcount++;
 
 

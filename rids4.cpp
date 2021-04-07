@@ -39,10 +39,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 //#define FIRST_MATCH_ONLY  //if setted, the searching process stops at the first found match
 
+//#define NODE_D_CONV	//refine node domains until convergence
+//#define EDGE_D_CONV	//refine edge domains until convergence
 
-//#define MAMA_0 //simple matching machine
+
+#define MAMA_0 //simple matching machine
 //#define MAMA_FC //mama by centrality flooding
-#define MAMA_AC //matching machine with angular coefficinet
+//#define MAMA_AC //matching machine with angular coefficinet
 
 //#define SOLVER_0 //simple solver with edge domains
 //#define SOLVER_ED //simple solver which exploits edge domains
@@ -298,11 +301,16 @@ int match(
 #ifdef MDEBUG
 	std::cout<<"initializing edge domain...\n";
 #endif
+
+						match_s=start_time();
+
 						EdgeDomains edomains;
 						std::cout<<"edomain init\n";
 						init_edomains(*rrg, *query, domains, *edgeComparator, edomains);
 
-						//print_domains(*query, *rrg, domains,edomains);
+#ifdef MDEBUG
+						print_domains(*query, *rrg, domains,edomains);
+#endif
 
 						DomainReduction dr(*query, domains, edomains, rrg->nof_nodes);
 						std::cout<<"edomain reduction\n";
@@ -312,6 +320,8 @@ int match(
 						std::cout<<"edomain refinement\n";
 						dr.final_refinement();
 						std::cout<<"edomain done\n";
+
+						match_t+=end_time(match_s);
 
 #ifdef MDEBUG
 						print_domains(*query, *rrg, domains,edomains);
@@ -369,13 +379,14 @@ int match(
 #ifdef MDEBUG
 						mama->print();
 						print_domains(*query, *rrg, domains,edomains);
+						print_domains_extended(*query, *rrg, domains,edomains);
 #endif
 
 #ifdef MDEBUG
 	mama->print();
 #endif
 
-						match_s=start_time();
+						///match_s=start_time();
 
 #ifdef MDEBUG
 	std::cout<<"solving...\n";
@@ -436,8 +447,8 @@ int match(
 	std::cout<<"all done\n";
 #endif
 
-		if(matchListener != NULL)
-		matchcount += matchListener->matchcount;
+		//if(matchListener != NULL)
+		//matchcount += matchListener->matchcount;
 
 		delete matchListener;
 
