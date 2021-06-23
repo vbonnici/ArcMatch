@@ -37,16 +37,16 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 Nomenclature
 rids4_
 [
-NODE_D_CONVERGENCE=0(inactive),1(active)
-EDGE_D_CONVERGENCE=0(inactive),1(active)
+NODE_D_CONVERGENCE=0(inactive),1(active)			NODE_D_CONV is on for 1
+EDGE_D_CONVERGENCE=0(inactive),1(active)			EDGE_D_CONV is on for 1
 _
 ]
-0|FC|AC
+0|FC|AC												MAMA_0 is on for 0
 _
-0|ED|DP
+0|ED|DP												SOLVER_0 is on for 0
 [
 _
-RE|NRE  (reduce or not edge domains)
+RE|NRE  (reduce or not edge domains)				REDUCE_EDGES is on for RE
 ]
 */
 
@@ -60,7 +60,7 @@ RE|NRE  (reduce or not edge domains)
 #define NODE_D_CONV	//refine node domains until convergence
 #define EDGE_D_CONV	//refine edge domains until convergence
 
-#define REDUCE_EDGES
+//#define REDUCE_EDGES
 
 
 #define MAMA_0 //simple matching machine
@@ -415,6 +415,12 @@ int match(
 
 						t_tmp = end_time(make_mama_s);
 						std::cout<<":time: make mama "<<t_tmp<<"\n";
+
+						std::cout<<"ordering: ";
+						for(int ii=0; ii<mama->nof_sn; i++){
+							std::cout<<mama->map_state_to_node[ii]<<" ";
+						}
+						std::cout<<"\n";
 
 #ifdef MDEBUG
 						mama->print();
