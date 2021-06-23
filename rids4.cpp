@@ -417,7 +417,7 @@ int match(
 						std::cout<<":time: make mama "<<t_tmp<<"\n";
 
 						std::cout<<"ordering: ";
-						for(int ii=0; ii<mama->nof_sn; i++){
+						for(int ii=0; ii<mama->nof_sn; ii++){
 							std::cout<<mama->map_state_to_node[ii]<<" ";
 						}
 						std::cout<<"\n";
