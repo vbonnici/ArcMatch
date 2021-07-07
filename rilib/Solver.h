@@ -387,6 +387,7 @@ std::cout<<"-----\n";
 #ifdef FIRST_MATCH_ONLY
 					si = -1;
 #endif
+					//if(matchListener.matchcount >= 100000)si = -1;
 //					return IF U WANT JUST AN INSTANCE;
 				}
 				else{
@@ -758,6 +759,7 @@ std::cout<<"CI "<<ci<<"\n";
 					si = -1;
 //					return IF U WANT JUST AN INSTANCE
 #endif
+					//if(matchcount >= 100000)si = -1;
 				}
 				else{
 					matched[solution[si]] = true;

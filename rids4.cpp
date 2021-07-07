@@ -6,7 +6,6 @@
  */
 
 /*
-Copyright (c) 2015 by Rosalba Giugno
 
 This library contains portions of other open source products covered by separate
 licenses. Please see the corresponding source files for specific terms.
@@ -419,6 +418,11 @@ int match(
 						std::cout<<"ordering: ";
 						for(int ii=0; ii<mama->nof_sn; ii++){
 							std::cout<<mama->map_state_to_node[ii]<<" ";
+						}
+						std::cout<<"\n";
+						std::cout<<"domain sizes: ";
+						for(int ii=0; ii<mama->nof_sn; ii++){
+							std::cout<<domains_size[ii]<<" ";
 						}
 						std::cout<<"\n";
 
