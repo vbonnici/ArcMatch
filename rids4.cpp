@@ -62,10 +62,11 @@ RE|NRE  (reduce or not edge domains)				REDUCE_EDGES is on for RE
 //#define REDUCE_EDGES
 
 
-#define MAMA_1 //original order
+//#define MAMA_1 //original order
 //#define MAMA_0 //simple matching machine with edge weigths set to 1
 //#define MAMA_FC //mama by centrality flooding
 //#define MAMA_AC //matching machine with angular coefficient
+#define MAMA_NS //the real original order with node sets for flags
 
 //#define SOLVER_0 //simple solver with edge domains
 //#define SOLVER_ED //simple solver which exploits edge domains
@@ -96,6 +97,7 @@ RE|NRE  (reduce or not edge domains)				REDUCE_EDGES is on for RE
 #include "MaMaConstrFirstEDs.h"
 #include "MaMaFloodCore.h"
 #include "MaMaAngularCoefficient.h"
+#include "MaMaConstrFirstNodeSets.h"
 
 
 #include "MatchListener.h"
@@ -407,6 +409,10 @@ int match(
 						
 						#ifdef MAMA_AC
 						MatchingMachine* mama = new MaMaAngularCoefficient(*query, domains, domains_size, edomains);
+						#endif
+
+						#ifdef MAMA_NS
+						MatchingMachine* mama = new MaMaConstrFirstNodeSets(*query, domains, domains_size);
 						#endif
 
 
