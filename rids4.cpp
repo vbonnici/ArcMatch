@@ -62,7 +62,8 @@ RE|NRE  (reduce or not edge domains)				REDUCE_EDGES is on for RE
 //#define REDUCE_EDGES
 
 
-#define MAMA_0 //simple matching machine
+#define MAMA_1 //original order
+//#define MAMA_0 //simple matching machine with edge weigths set to 1
 //#define MAMA_FC //mama by centrality flooding
 //#define MAMA_AC //matching machine with angular coefficient
 
@@ -392,6 +393,10 @@ int match(
 						make_mama_s=start_time();
 						
 						//MatchingMachine* mama = new MaMaConstrFirstDs(*query, domains, domains_size);
+						#ifdef MAMA_1
+						MatchingMachine* mama = new MaMaConstrFirstDs(*query, domains, domains_size);
+						#endif
+
 						#ifdef MAMA_0
 						MatchingMachine* mama = new MaMaConstrFirstEDs(*query, domains, domains_size, edomains);
 						#endif

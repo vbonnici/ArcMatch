@@ -243,6 +243,8 @@ public:
 				map_state_to_node[maxi] = tmp;
 			}
 
+			std::cout<<"<<<< "<<si<<" "<<n<<"\n";
+
 			n = map_state_to_node[si];
 			map_node_to_state[n] = si;
 
