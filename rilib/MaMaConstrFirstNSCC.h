@@ -31,64 +31,73 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 
-#ifndef MAMACONSTRFIRSTNODESETS_H_
-#define MAMACONSTRFIRSTNODESETS_H_
+#ifndef MAMACONSTRFIRSTNSCC_H_
+#define MAMACONSTRFIRSTNSCC_H_
 
 #include "Graph.h"
 #include "sbitset.h"
 #include "MatchingMachine.h"
+#include "AttributeComparator.h"
 #include <set>
+#include <vector>
+#include <algorithm>
 
 namespace rilib{
 
-class MaMaConstrFirstNodeSets : public MatchingMachine{
+class MaMaConstrFirstNSCC : public MatchingMachine{
 	enum NodeFlag {NS_CORE, NS_CNEIGH, NS_UNV};
 
 	sbitset *domains;
 	int *domains_size;
 
+	AttributeComparator& nodeComparator;
+	AttributeComparator& edgeComparator;
+
 public:
 
-	MaMaConstrFirstNodeSets(Graph& query, sbitset *_domains, int *_domains_size)
-		: MatchingMachine(query), domains(_domains), domains_size(_domains_size){
+	MaMaConstrFirstNSCC(Graph& query, sbitset *_domains, int *_domains_size, 
+						AttributeComparator& _nodeComparator, AttributeComparator& _edgeComparator)
+		: MatchingMachine(query), domains(_domains), domains_size(_domains_size), nodeComparator(_nodeComparator), edgeComparator(_edgeComparator){
 
 	}
-
 	virtual void build(Graph& ssg){
 		NodeFlag* node_flags = new NodeFlag[nof_sn]; 						//indexed by node_id
 		for(int i=0; i<nof_sn; i++){
 			node_flags[i] = NS_UNV;
+
+			//used for recognizing core compatibility parents
+			parent_state[i] = -1;
 		}
 
 		int si = 0;
 		for(int i=0; i<nof_sn; i++){
 			if(domains_size[i] == 1){
-#ifdef MDEBUG
+//#ifdef MDEBUG
 				std::cout<<"ssi["<<si<<"] = "<<i<<"\n";
-#endif
+//#endif
 				push_node_to_core(i, si, node_flags, ssg, map_state_to_node, map_node_to_state);
 				si++;
 			}
 		}
 
-#ifdef MDEBUG
+//#ifdef MDEBUG
 		for(int i=0; i<nof_sn; i++){
 			std::cout<<i<<"["<<node_flags[i]<<"] ";
 		}
 		std::cout<<"\n";
-#endif
+//#endif
 
 		for( ; si<nof_sn; si++){
 
-#ifdef MDEBUG
+//#ifdef MDEBUG
 			std::cout<<"SI["<<si<<"]\n";
-#endif
+//#endif
 			int best_nid = -1;
 			int best_nid_score[] = {0,0,0,0,0};
 			int current_nid_score[] = {0,0,0,0,0};
 
 
-#ifdef MDEBUG
+//#ifdef MDEBUG
 			for(int nid=0; nid<nof_sn; nid++){
 				std::cout<<nid<<"("<<node_flags[nid]<<") ";
 				get_scores(nid, current_nid_score, node_flags, ssg);
@@ -98,7 +107,7 @@ public:
 				}
 				std::cout<<"]\n";
 			}
-#endif
+//#endif
 
 			for(int nid=0; nid<nof_sn; nid++){
 				if( node_flags[nid] == NS_CNEIGH ){
@@ -137,17 +146,43 @@ public:
 					}
 				}
 			}
-#ifdef MDEBUG
+//#ifdef MDEBUG
 			std::cout<<"si["<<si<<"] = "<<best_nid<<"\n";
-#endif
+//#endif
+			std::set<int> cascade;
+			if(best_nid_score[0] > 0){
+				for(int i=0; i<nof_sn; i++){
+					if((i!=best_nid) && (node_flags[i] == NS_CNEIGH)){
+						if(are_core_compatible(  best_nid, i, node_flags, ssg) ){
+							cascade.insert(i);
+						}
+					}
+				}
+			}
+
 			push_node_to_core(best_nid, si, node_flags, ssg, map_state_to_node, map_node_to_state);
 
-#ifdef MDEBUG
+//#ifdef MDEBUG
+			std::cout<<"core compatible: ";
+			for(auto &i : cascade){
+				std::cout<<i<<" ";
+			}
+			std::cout<<"\n";
+//#endif
+			int osi = si;
+			for(auto &i : cascade){
+				si++;
+				push_node_to_core(i, si, node_flags, ssg, map_state_to_node, map_node_to_state);
+				parent_state[si] = osi;
+			}
+			
+
+//#ifdef MDEBUG
 			for(int i=0; i<nof_sn; i++){
 				std::cout<<i<<"["<<node_flags[i]<<"] ";
 			}
 			std::cout<<"\n";
-#endif
+//#endif
 		}
 
 
@@ -223,10 +258,6 @@ private:
 	}
 
 	void get_scores(int nid, int *scores,  NodeFlag* node_flags, Graph &qg){
-		//for(int i=0; i<4; i++){
-		//	scores[i] = 0;
-		//}
-
 		std::set<int> all;
 
 		std::set<int> cores;
@@ -235,30 +266,25 @@ private:
 
 		for(int i=0; i<qg.out_adj_sizes[nid]; i++){
 			if(node_flags[ qg.out_adj_list[nid][i] ] == NS_CORE){
-				//scores[0]++;
 				cores.insert(qg.out_adj_list[nid][i]);
 			}
 			else if(node_flags[ qg.out_adj_list[nid][i] ] == NS_CNEIGH){
-				//scores[1]++;
 				neighs.insert(qg.out_adj_list[nid][i]);
 			}
 			else{
-				//scores[2]++;
 				unvs.insert(qg.out_adj_list[nid][i]);
 			}
 			all.insert(qg.out_adj_list[nid][i]);
 		}
+
 		for(int i=0; i<qg.in_adj_sizes[nid]; i++){
 			if(node_flags[ qg.in_adj_list[nid][i] ] == NS_CORE){
-				//scores[0]++;
 				cores.insert(qg.in_adj_list[nid][i]);
 			}
 			else if(node_flags[ qg.in_adj_list[nid][i] ] == NS_CNEIGH){
-				//scores[1]++;
 				neighs.insert(qg.in_adj_list[nid][i]);
 			}
 			else{
-				//scores[2]++;
 				unvs.insert(qg.in_adj_list[nid][i]);
 			}
 			all.insert(qg.in_adj_list[nid][i]);
@@ -292,10 +318,80 @@ private:
 		return n2-n1;
 	}
 
+
+	/*std::vector<int> get_cores(int nid, NodeFlag* node_flags, Graph &qg){
+		std::vector<int> cores;
+
+		for(int i=0; i<qg.out_adj_sizes[nid]; i++){
+			if(node_flags[ qg.out_adj_list[nid][i] ] == NS_CORE){
+				cores.push_back(qg.out_adj_list[nid][i]);
+			}
+		}
+		for(int i=0; i<qg.in_adj_sizes[nid]; i++){
+			if(node_flags[ qg.in_adj_list[nid][i] ] == NS_CORE){
+				cores.push_back(qg.in_adj_list[nid][i]);
+			}
+		}
+
+		std::sort(cores.begin(), cores.end());
+
+		return cores;
+	}*/
+
+
+	bool are_core_compatible( int nid1, int nid2, NodeFlag* node_flags, Graph &qg ){
+		if(nodeComparator.compare( qg.nodes_attrs[nid1], qg.nodes_attrs[nid2] )){
+			bool found;
+			
+			for(int i=0; i<qg.out_adj_sizes[nid1]; i++){
+				if(node_flags[ qg.out_adj_list[nid1][i] ] == NS_CORE){
+					found = false;
+					for(int j=0; j<qg.out_adj_sizes[nid2]; j++){
+						if(qg.out_adj_list[nid2][j] == qg.out_adj_list[nid1][i]){
+							if(edgeComparator.compare(qg.out_adj_attrs[nid2][j], qg.out_adj_attrs[nid1][i])  ){
+								found = true;
+								break;
+							}
+						}
+					}
+					if(!found){
+						return false;
+					}
+				}
+			}
+
+			for(int c=0; c<qg.nof_nodes; c++){
+				if(node_flags[c] == NS_CORE){
+					for(int i=0; i<qg.out_adj_sizes[c]; i++){
+						if(qg.out_adj_list[c][i] == nid1){
+
+							found = false;
+							for(int j=0; j<qg.out_adj_sizes[c]; j++){
+								if(qg.out_adj_list[c][j] == nid2){
+									if(  edgeComparator.compare(qg.out_adj_attrs[c][j], qg.out_adj_attrs[c][i])  ){
+										found = true;
+										break;
+									}
+								}
+
+							}		
+							if(!found){
+								return false;
+							}
+						}
+					}
+				}
+			}
+
+			return true;
+		}
+		return false;
+	}
+
 };
 
 }
 
 
-#endif /* MAMACONSTRFIRSTNODESETS_H_ */
+#endif /* MAMACONSTRFIRSTNSCC_H_ */
 
