@@ -34,6 +34,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef MAMACONSTRFIRSTNODESETS_H_
 #define MAMACONSTRFIRSTNODESETS_H_
 
+//#define MAMACONSTRFIRSTNODESETS_H_MDEBUG 1
+
 #include "Graph.h"
 #include "sbitset.h"
 #include "MatchingMachine.h"
@@ -63,7 +65,7 @@ public:
 		int si = 0;
 		for(int i=0; i<nof_sn; i++){
 			if(domains_size[i] == 1){
-#ifdef MDEBUG
+#ifdef MAMACONSTRFIRSTNODESETS_H_MDEBUG
 				std::cout<<"ssi["<<si<<"] = "<<i<<"\n";
 #endif
 				push_node_to_core(i, si, node_flags, ssg, map_state_to_node, map_node_to_state);
@@ -71,7 +73,7 @@ public:
 			}
 		}
 
-#ifdef MDEBUG
+#ifdef MAMACONSTRFIRSTNODESETS_H_MDEBUG
 		for(int i=0; i<nof_sn; i++){
 			std::cout<<i<<"["<<node_flags[i]<<"] ";
 		}
@@ -80,7 +82,7 @@ public:
 
 		for( ; si<nof_sn; si++){
 
-#ifdef MDEBUG
+#ifdef MAMACONSTRFIRSTNODESETS_H_MDEBUG
 			std::cout<<"SI["<<si<<"]\n";
 #endif
 			int best_nid = -1;
@@ -88,7 +90,7 @@ public:
 			int current_nid_score[] = {0,0,0,0,0};
 
 
-#ifdef MDEBUG
+#ifdef MAMACONSTRFIRSTNODESETS_H_MDEBUG
 			for(int nid=0; nid<nof_sn; nid++){
 				std::cout<<nid<<"("<<node_flags[nid]<<") ";
 				get_scores(nid, current_nid_score, node_flags, ssg);
@@ -137,12 +139,12 @@ public:
 					}
 				}
 			}
-#ifdef MDEBUG
+#ifdef MAMACONSTRFIRSTNODESETS_H_MDEBUG
 			std::cout<<"si["<<si<<"] = "<<best_nid<<"\n";
 #endif
 			push_node_to_core(best_nid, si, node_flags, ssg, map_state_to_node, map_node_to_state);
 
-#ifdef MDEBUG
+#ifdef MAMACONSTRFIRSTNODESETS_H_MDEBUG
 			for(int i=0; i<nof_sn; i++){
 				std::cout<<i<<"["<<node_flags[i]<<"] ";
 			}
@@ -279,7 +281,11 @@ private:
 				return s1[i]-s2[i];
 			}
 		}
+
 		if(s1[4] != s2[4]){
+#ifdef MAMACONSTRFIRSTNODESETS_H_MDEBUG
+			std::cout<<"dcomp "<<n1<<"-"<<n2<<" "<<s1[4]<<"-"<<s2[4]<<" \n";
+#endif
 			return s2[4]- s1[4];
 		}
 		/*
@@ -291,7 +297,6 @@ private:
 		}*/
 		return n2-n1;
 	}
-
 };
 
 }

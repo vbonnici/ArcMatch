@@ -42,7 +42,7 @@ NODE_D_CONVERGENCE=0(inactive),1(active)			NODE_D_CONV is on for 1
 EDGE_D_CONVERGENCE=0(inactive),1(active)			EDGE_D_CONV is on for 1
 _
 ]
-0|FC|AC												MAMA_0 is on for 0
+1|0|FC|AC|NS|NSç												MAMA_0 is on for 0
 _
 0|ED|DP												SOLVER_0 is on for 0
 [
@@ -68,7 +68,8 @@ RE|NRE  (reduce or not edge domains)				REDUCE_EDGES is on for RE
 //#define MAMA_0 //simple matching machine with edge weigths set to 1
 //#define MAMA_FC //mama by centrality flooding
 //#define MAMA_AC //matching machine with angular coefficient
-#define MAMA_NS //the real original order with node sets for flags
+//#define MAMA_NS //the real original order with node sets for flags
+#define MAMA_NSL //the real original order with node sets for flags, with disjoint leafs at the end of the ordering
 //#define MAMA_CC //ordering by taking into account core compatibility
 
 //#define SOLVER_0 //simple solver with edge domains
@@ -101,6 +102,7 @@ RE|NRE  (reduce or not edge domains)				REDUCE_EDGES is on for RE
 #include "MaMaFloodCore.h"
 #include "MaMaAngularCoefficient.h"
 #include "MaMaConstrFirstNodeSets.h"
+#include "MaMaConstrFirstNodeSetsLeafs.h"
 #include "MaMaConstrFirstNSCC.h"
 
 
@@ -393,9 +395,9 @@ int match(
 							*/
 						}
 
-						/*for(int ii=0; ii<query->nof_nodes; ii++){
+						for(int ii=0; ii<query->nof_nodes; ii++){
 							std::cout<<ii<<" "<<query->out_adj_sizes[ii]<<" "<<domains_size[ii]<<"\n";
-						}*/
+						}
 
 
 						//build the static matching machine
@@ -422,6 +424,10 @@ int match(
 						MatchingMachine* mama = new MaMaConstrFirstNodeSets(*query, domains, domains_size);
 						#endif
 
+						#ifdef MAMA_NSL
+						MatchingMachine* mama = new MaMaConstrFirstNodeSetsLeafs(*query, domains, domains_size);
+						#endif
+
 						#ifdef MAMA_CC
 						MatchingMachine* mama = new MaMaConstrFirstNSCC(*query, domains, domains_size, *nodeComparator, *edgeComparator);
 						#endif
@@ -439,7 +445,7 @@ int match(
 
 						std::cout<<"ordering: ";
 						for(int ii=0; ii<mama->nof_sn; ii++){
-							std::cout<<mama->map_state_to_node[ii]<<" ";
+							std::cout<<mama->map_state_to_node[ii]<<"("<<domains_size[mama->map_state_to_node[ii]]<<") ";
 						}
 						std::cout<<"\n";
 						std::cout<<"domain sizes: ";
