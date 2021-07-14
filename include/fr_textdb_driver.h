@@ -1,37 +1,6 @@
-/*
- * c_textdb_driver.h
- *
- *  Created on: Nov 11, 2012
- *      Author: vbonnici
- */
-/*
-Copyright (c) 2014 by Rosalba Giugno
+#ifndef C_FR_TEXTDB_DRIVER_H_
+#define C_FR_TEXTDB_DRIVER_H_
 
-This library contains portions of other open source products covered by separate
-licenses. Please see the corresponding source files for specific terms.
-
-RI is provided under the terms of The MIT License (MIT):
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files (the "Software"), to deal in
-the Software without restriction, including without limitation the rights to
-use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
-the Software, and to permit persons to whom the Software is furnished to do so,
-subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-
-#ifndef C_TEXTDB_DRIVER_H_
-#define C_TEXTDB_DRIVER_H_
 
 #include <string>
 #include <iostream>
@@ -40,6 +9,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <stdlib.h>
 #include <string.h>
 
+#include "FileReader.h"
+
 #include "Graph.h"
 
 #include "timer.h"
@@ -47,37 +18,25 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 using namespace std;
 using namespace rilib;
 
-enum GRAPH_FILE_TYPE {GFT_GFU, GFT_GFD, GFT_EGFU, GFT_EGFD, GFT_VFU, GFT_LAD, GFT_3GO};
+enum GRAPH_FILE_TYPE {GFT_GFU, GFT_GFD, GFT_EGFU, GFT_EGFD, GFT_LAD};
 
 #define STR_READ_LENGTH 256
 
 
-int read_gfu(const char* fileName, FILE* fd, Graph* graph);
-int read_gfd(const char* fileName, FILE* fd, Graph* graph);
-int read_vfu(const char* fileName, FILE* fd, Graph* graph);
-int read_lad(const char* fileName, FILE* fd, Graph* graph);
-int read_egfu(const char* fileName, FILE* fd, Graph* graph);
-int read_egfd(const char* fileName, FILE* fd, Graph* graph);
+int read_gfu(const char* fileName, FileReader* fd, Graph* graph);
+int read_gfd(const char* fileName, FileReader* fd, Graph* graph);
+//int read_lad(const char* fileName, FileReader* fd, Graph* graph);
+int read_egfu(const char* fileName, FileReader* fd, Graph* graph);
+int read_egfd(const char* fileName, FileReader* fd, Graph* graph);
 
 
-FILE* open_file(const char* filename, enum GRAPH_FILE_TYPE type){
-	FILE* fd;
-	switch (type){
-	case GFT_VFU:
-		fd = fopen(filename, "r+b");
-		break;
-	default:
-		fd = fopen(filename, "r");
-		break;
-	}
-	if (fd==NULL){
-		printf("ERROR: Cannot open input file %s\n", filename);
-		exit(1);
-	}
+FileReader* open_file(const char* filename, enum GRAPH_FILE_TYPE type){
+	FileReader* fd = new FileReader(filename);
 	return fd;
 };
 
-int read_dbgraph(const char* filename, FILE* fd, Graph* g, enum GRAPH_FILE_TYPE type){
+
+int read_dbgraph(const char* filename, FileReader* fd, Graph* g, enum GRAPH_FILE_TYPE type){
 	int ret = 0;
 	switch (type){
 	case GFT_GFU:
@@ -92,11 +51,8 @@ int read_dbgraph(const char* filename, FILE* fd, Graph* g, enum GRAPH_FILE_TYPE 
 	case GFT_EGFD:
 		ret = read_egfd(filename, fd, g);
 		break;
-	case GFT_VFU:
-		ret = read_vfu(filename, fd, g);
-		break;
 	case GFT_LAD:
-		ret = read_lad(filename, fd, g);
+		//ret = read_lad(filename, fd, g);
 		break;
 	}
 
@@ -104,7 +60,7 @@ int read_dbgraph(const char* filename, FILE* fd, Graph* g, enum GRAPH_FILE_TYPE 
 };
 
 int read_graph(const char* filename, Graph* g, enum GRAPH_FILE_TYPE type){
-	FILE* fd = open_file(filename, type);
+	FileReader* fd = new FileReader(filename);
 	if (fd==NULL){
 		printf("ERROR: Cannot open input file %s\n", filename);
 		exit(1);
@@ -123,21 +79,15 @@ int read_graph(const char* filename, Graph* g, enum GRAPH_FILE_TYPE type){
 	case GFT_EGFD:
 		ret = read_egfd(filename, fd, g);
 		break;
-	case GFT_VFU:
-		ret = read_vfu(filename, fd, g);
-		break;
 	case GFT_LAD:
-		ret = read_lad(filename, fd, g);
+		//ret = read_lad(filename, fd, g);
 		break;
 	}
 
-	fclose(fd);
+	fd->close();
+    delete fd;
 	return ret;
 };
-
-
-
-
 
 
 
@@ -151,7 +101,7 @@ public:
 
 
 
-int read_gfu(const char* fileName, FILE* fd, Graph* graph){
+int read_gfu(const char* fileName, FileReader* fd, Graph* graph){
 	TIMEHANDLE time_s;
 	double time_e;
 
@@ -160,20 +110,24 @@ int read_gfu(const char* fileName, FILE* fd, Graph* graph){
 	char str[STR_READ_LENGTH];
 	int i,j;
 
-	if (fscanf(fd,"%s",str) != 1){	//#graphname
-		return -1;
-	}
-	if (fscanf(fd,"%d",&(graph->nof_nodes)) != 1){//nof nodes
-		return -1;
-	}
+    fd->next_string();
+	// if (!fd->is_valid()){	//#graphname
+	// 	return -1;
+	// }
+
+    graph->nof_nodes = fd->next_int();
+	// if(!fd->is_valid()){//nof nodes
+	// 	return -1;
+	// }
 
 	//node labels
 	graph->nodes_attrs = (void**)malloc(graph->nof_nodes * sizeof(void*));
-	char *label = new char[STR_READ_LENGTH];
+	const char *label;
 	for(i=0; i<graph->nof_nodes; i++){
-		if (fscanf(fd,"%s",label) != 1){
-			return -1;
-		}
+        label = fd->next_string();
+		// if(!fd->is_valid()){
+		// 	return -1;
+		// }
 		graph->nodes_attrs[i] = new std::string(label);
 	}
 
@@ -187,19 +141,21 @@ int read_gfu(const char* fileName, FILE* fd, Graph* graph){
 		ns_o[i] = NULL;
 		ns_i[i] = NULL;
 	}
-	int temp = 0;
-	if (fscanf(fd,"%d",&temp) != 1){//number of edges
-		return -1;
-	}
+	int temp = fd->next_int();
+	// if (fscanf(fd,"%d",&temp) != 1){//number of edges
+	// 	return -1;
+	// }
 
 	int es = 0, et = 0;
 	for(i=0; i<temp; i++){
-		if (fscanf(fd,"%d",&es) != 1){//source node
-			return -1;
-		}
-		if (fscanf(fd,"%d",&et) != 1){//target node
-			return -1;
-		}
+        es = fd->next_int();
+        et = fd->next_int();
+		// if (fscanf(fd,"%d",&es) != 1){//source node
+		// 	return -1;
+		// }
+		// if (fscanf(fd,"%d",&et) != 1){//target node
+		// 	return -1;
+		// }
 
 		graph->out_adj_sizes[es]++;
 		graph->in_adj_sizes[et]++;
@@ -312,23 +268,26 @@ int read_gfu(const char* fileName, FILE* fd, Graph* graph){
 
 
 
-int read_gfd(const char* fileName, FILE* fd, Graph* graph){
+int read_gfd(const char* fileName, FileReader* fd, Graph* graph){
 	char str[STR_READ_LENGTH];
 	int i,j;
 
-	if (fscanf(fd,"%s",str) != 1){	//#graphname
-		return -1;
-	}
-	if (fscanf(fd,"%d",&(graph->nof_nodes)) != 1){//nof nodes
-		return -1;
-	}
+    fd->next_string();
+	// if (fscanf(fd,"%s",str) != 1){	//#graphname
+	// 	return -1;
+	// }
+    graph->nof_nodes = fd->next_int();
+	// if (fscanf(fd,"%d",&(graph->nof_nodes)) != 1){//nof nodes
+	// 	return -1;
+	// }
 	//node labels
 	graph->nodes_attrs = (void**)malloc(graph->nof_nodes * sizeof(void*));
-	char *label = new char[STR_READ_LENGTH];
+	const char *label;// = new char[STR_READ_LENGTH];
 	for(i=0; i<graph->nof_nodes; i++){
-		if (fscanf(fd,"%s",label) != 1){
-			return -1;
-		}
+        label = fd->next_string();
+		// if (fscanf(fd,"%s",label) != 1){
+		// 	return -1;
+		// }
 		graph->nodes_attrs[i] = new std::string(label);
 	}
 
@@ -342,18 +301,20 @@ int read_gfd(const char* fileName, FILE* fd, Graph* graph){
 		ns_o[i] = NULL;
 		ns_i[i] = NULL;
 	}
-	int temp = 0;
-	if (fscanf(fd,"%d",&temp) != 1){//number of edges
-		return -1;
-	}
+	int temp = fd->next_int();;
+	// if (fscanf(fd,"%d",&temp) != 1){//number of edges
+	// 	return -1;
+	// }
 	int es = 0, et = 0;
 	for(i=0; i<temp; i++){
-		if (fscanf(fd,"%d",&es) != 1){//source node
-			return -1;
-		}
-		if (fscanf(fd,"%d",&et) != 1){//target node
-			return -1;
-		}
+        es = fd->next_int();
+        et = fd->next_int();
+		// if (fscanf(fd,"%d",&es) != 1){//source node
+		// 	return -1;
+		// }
+		// if (fscanf(fd,"%d",&et) != 1){//target node
+		// 	return -1;
+		// }
 		graph->out_adj_sizes[es]++;
 		graph->in_adj_sizes[et]++;
 
@@ -400,47 +361,6 @@ int read_gfd(const char* fileName, FILE* fd, Graph* graph){
 };
 
 
-int read_vfu(const char* fileName, FILE* fd, Graph* graph){
-	return 0;
-};
-
-int read_lad(const char* fileName, FILE* fd, Graph* graph){
-	return 0;
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -456,24 +376,28 @@ public:
 
 
 
-int read_egfu(const char* fileName, FILE* fd, Graph* graph){
+int read_egfu(const char* fileName, FileReader* fd, Graph* graph){
 	char str[STR_READ_LENGTH];
 	int i,j;
 
-	if (fscanf(fd,"%s",str) != 1){	//#graphname
-		return -1;
-	}
-	if (fscanf(fd,"%d",&(graph->nof_nodes)) != 1){//nof nodes
-		return -1;
-	}
+    fd->next_string();
+    graph->nof_nodes = fd->next_int();
+	// if (fscanf(fd,"%s",str) != 1){	//#graphname
+	// 	return -1;
+	// }
+	// if (fscanf(fd,"%d",&(graph->nof_nodes)) != 1){//nof nodes
+	// 	return -1;
+	// }
 
 	//node labels
 	graph->nodes_attrs = (void**)malloc(graph->nof_nodes * sizeof(void*));
-	char *label = new char[STR_READ_LENGTH];
+	//char *label = new char[STR_READ_LENGTH];
+    const char * label;
 	for(i=0; i<graph->nof_nodes; i++){
-		if (fscanf(fd,"%s",label) != 1){
-			return -1;
-		}
+        label = fd->next_string();
+		// if (fscanf(fd,"%s",label) != 1){
+		// 	return -1;
+		// }
 		graph->nodes_attrs[i] = new std::string(label);
 	}
 
@@ -487,22 +411,26 @@ int read_egfu(const char* fileName, FILE* fd, Graph* graph){
 		ns_o[i] = NULL;
 		ns_i[i] = NULL;
 	}
-	int temp = 0;
-	if (fscanf(fd,"%d",&temp) != 1){//number of edges
-		return -1;
-	}
+	// int temp = 0;
+	// if (fscanf(fd,"%d",&temp) != 1){//number of edges
+	// 	return -1;
+	// }
+    int temp = fd->next_int();
 
 	int es = 0, et = 0;
 	for(i=0; i<temp; i++){
-		if (fscanf(fd,"%d",&es) != 1){//source node
-			return -1;
-		}
-		if (fscanf(fd,"%d",&et) != 1){//target node
-			return -1;
-		}
-		if (fscanf(fd,"%s",label) != 1){
-			return -1;
-		}
+        es = fd->next_int();
+        et = fd->next_int();
+        label = fd->next_string();
+		// if (fscanf(fd,"%d",&es) != 1){//source node
+		// 	return -1;
+		// }
+		// if (fscanf(fd,"%d",&et) != 1){//target node
+		// 	return -1;
+		// }
+		// if (fscanf(fd,"%s",label) != 1){
+		// 	return -1;
+		// }
 
 		graph->out_adj_sizes[es]++;
 		graph->in_adj_sizes[et]++;
@@ -608,23 +536,27 @@ int read_egfu(const char* fileName, FILE* fd, Graph* graph){
 };
 
 
-int read_egfd(const char* fileName, FILE* fd, Graph* graph){
+int read_egfd(const char* fileName, FileReader* fd, Graph* graph){
 	char str[STR_READ_LENGTH];
 	int i,j;
 
-	if (fscanf(fd,"%s",str) != 1){	//#graphname
-		return -1;
-	}
-	if (fscanf(fd,"%d",&(graph->nof_nodes)) != 1){//nof nodes
-		return -1;
-	}
+    fd->next_string();
+    graph->nof_nodes = fd->next_int();
+	// if (fscanf(fd,"%s",str) != 1){	//#graphname
+	// 	return -1;
+	// }
+	// if (fscanf(fd,"%d",&(graph->nof_nodes)) != 1){//nof nodes
+	// 	return -1;
+	// }
 	//node labels
 	graph->nodes_attrs = (void**)malloc(graph->nof_nodes * sizeof(void*));
-	char *label = new char[STR_READ_LENGTH];
+	//char *label = new char[STR_READ_LENGTH];
+    const char * label;
 	for(i=0; i<graph->nof_nodes; i++){
-		if (fscanf(fd,"%s",label) != 1){
-			return -1;
-		}
+        label = fd->next_string();
+		// if (fscanf(fd,"%s",label) != 1){
+		// 	return -1;
+		// }
 		graph->nodes_attrs[i] = new std::string(label);
 	}
 
@@ -638,21 +570,25 @@ int read_egfd(const char* fileName, FILE* fd, Graph* graph){
 		ns_o[i] = NULL;
 		ns_i[i] = NULL;
 	}
-	int temp = 0;
-	if (fscanf(fd,"%d",&temp) != 1){//number of edges
-		return -1;
-	}
+	// int temp = 0;
+	// if (fscanf(fd,"%d",&temp) != 1){//number of edges
+	// 	return -1;
+	// }
+    int temp = fd->next_int();
 	int es = 0, et = 0;
 	for(i=0; i<temp; i++){
-		if (fscanf(fd,"%d",&es) != 1){//source node
-			return -1;
-		}
-		if (fscanf(fd,"%d",&et) != 1){//target node
-			return -1;
-		}
-		if (fscanf(fd,"%s",label) != 1){
-			return -1;
-		}
+        es = fd->next_int();
+        et = fd->next_int();
+        label = fd->next_string();
+		// if (fscanf(fd,"%d",&es) != 1){//source node
+		// 	return -1;
+		// }
+		// if (fscanf(fd,"%d",&et) != 1){//target node
+		// 	return -1;
+		// }
+		// if (fscanf(fd,"%s",label) != 1){
+		// 	return -1;
+		// }
 
 		graph->out_adj_sizes[es]++;
 		graph->in_adj_sizes[et]++;
@@ -705,5 +641,4 @@ int read_egfd(const char* fileName, FILE* fd, Graph* graph){
 };
 
 
-
-#endif /* C_TEXTDB_DRIVER_H_ */
+#endif //C_FR_TEXTDB_DRIVER_H_

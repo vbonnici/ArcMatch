@@ -72,3 +72,8 @@ rids4_11_FC_DP
 thindr0_mono
 rids4_11_NS_DP_NRE_100k
 rids4_11_NS_DP_NRE
+test_text.txt
+.gitignore
+rids4_FR_11_NS_DP_NRE
+rids4_FR_11_NS_DP_NRE_100k
+test_int.txt

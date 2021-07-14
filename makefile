@@ -3,7 +3,8 @@ CC=g++
 CFLAGS=-std=c++11 -c -O3 
 #CFLAGS=-std=c++11 -c -O3 -g
 
-SOURCES= rids4.cpp
+#SOURCES= rids4.cpp
+SOURCES= rids4_frread.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 
 #EXECUTABLE=rids4_dbg

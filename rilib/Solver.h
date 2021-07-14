@@ -775,6 +775,13 @@ std::cout<<"CI "<<ci<<"\n";
 
 
 
+
+	void solve_cc(){
+
+	};
+
+
+
 //	virtual bool nodeCheck(int si, int ci, int* map_state_to_node)=0;
 	virtual bool edgesCheck(int si, int ci, int* solution, bool* matched)=0;
 

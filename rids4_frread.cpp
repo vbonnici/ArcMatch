@@ -36,6 +36,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 Nomenclature
 rids4_
 [
+FR													custom file reader
+_	
 NODE_D_CONVERGENCE=0(inactive),1(active)			NODE_D_CONV is on for 1
 EDGE_D_CONVERGENCE=0(inactive),1(active)			EDGE_D_CONV is on for 1
 _
@@ -66,8 +68,8 @@ RE|NRE  (reduce or not edge domains)				REDUCE_EDGES is on for RE
 //#define MAMA_0 //simple matching machine with edge weigths set to 1
 //#define MAMA_FC //mama by centrality flooding
 //#define MAMA_AC //matching machine with angular coefficient
-//#define MAMA_NS //the real original order with node sets for flags
-#define MAMA_CC //ordering by taking into account core compatibility
+#define MAMA_NS //the real original order with node sets for flags
+//#define MAMA_CC //ordering by taking into account core compatibility
 
 //#define SOLVER_0 //simple solver with edge domains
 //#define SOLVER_ED //simple solver which exploits edge domains
@@ -87,7 +89,7 @@ RE|NRE  (reduce or not edge domains)				REDUCE_EDGES is on for RE
 
 
 
-#include "c_textdb_driver.h"
+#include "fr_textdb_driver.h"
 #include "timer.h"
 
 
@@ -287,7 +289,7 @@ int match(
 			matchedcouples = 0;		//nof mathed pair (during partial solutions)
 	long tsteps = 0, ttriedcouples = 0, tmatchedcouples = 0;
 
-	FILE *fd = open_file(referencefile.c_str(), filetype);
+	FileReader *fd = open_file(referencefile.c_str(), filetype);
 	if(fd != NULL){
 #ifdef PRINT_MATCHES
 		//if you want to print found matches on screen
@@ -307,8 +309,9 @@ int match(
 	std::cout<<"reading reference...\n";
 #endif
 			int rret = read_dbgraph(referencefile.c_str(), fd, rrg, filetype);
-			rreaded = (rret == 0);
+			rreaded = fd->is_valid();
 			load_t+=end_time(load_s);
+
 
 			if(rreaded){
 				if(!doBijIso ||
@@ -518,6 +521,8 @@ int match(
 				//ReferenceGRaph destroyer is not yet developed...
 			}
 			i++;
+
+			
 		}while(rreaded);
 
 #ifdef MDEBUG
@@ -529,7 +534,7 @@ int match(
 
 		delete matchListener;
 
-		fclose(fd);
+		fd->close();
 	}
 	else{
 		std::cout<<"unable to open reference file\n";
