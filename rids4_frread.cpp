@@ -451,7 +451,7 @@ int match(
 						std::cout<<"\n";
 						std::cout<<"domain sizes: ";
 						for(int ii=0; ii<mama->nof_sn; ii++){
-							std::cout<<domains_size[ii]<<" ";
+							std::cout<<ii<<"["<<domains_size[ii]<<"] ";
 						}
 						std::cout<<"\n";
 

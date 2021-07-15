@@ -33,6 +33,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef SOLVER_H_
 #define SOLVER_H_
 
+//#define SOLVER_H_MDEBUG
+
 #include "MatchingMachine.h"
 #include "Graph.h"
 #include "sbitset.h"
@@ -789,7 +791,7 @@ std::cout<<"CI "<<ci<<"\n";
 		cand_ecount_t ce_positions;
 
 
-#ifdef MDEBUG
+#ifdef SOLVER_H_MDEBUG
 std::cout<<"ORDERED EDGE SETS\n";
 #endif
 
@@ -821,7 +823,7 @@ std::cout<<"ORDERED EDGE SETS\n";
 					for(ordered_edge_set::iterator eit = tset.begin(); eit != tset.end(); eit++){
 						ordered_edge_domains[eid][k] = eit->first;
 						ordered_edge_domains[eid][k+ordered_edge_domains_sizes[eid]] = eit->second;
-#ifdef MDEBUG
+#ifdef SOLVER_H_MDEBUG
 std::cout<<"OUT eid: "<<eid<<";k "<<k<<": "<<eit->first<<"-"<<eit->second<<"\n";
 #endif
 
@@ -844,7 +846,7 @@ std::cout<<"OUT eid: "<<eid<<";k "<<k<<": "<<eit->first<<"-"<<eit->second<<"\n";
 					for(ordered_edge_set::iterator eit = tset.begin(); eit != tset.end(); eit++){
 						ordered_edge_domains[eid][k] = eit->first;
 						ordered_edge_domains[eid][k+ordered_edge_domains_sizes[eid]] = eit->second;
-#ifdef MDEBUG
+#ifdef SOLVER_H_MDEBUG
 std::cout<<"IN eid: "<<eid<<";k "<<k<<": "<<eit->first<<"-"<<eit->second<<"\n";
 #endif
 						ce_positions.insert({std::make_pair(eit->first,eid), k});
@@ -897,182 +899,249 @@ std::cout<<"IN eid: "<<eid<<";k "<<k<<": "<<eit->first<<"-"<<eit->second<<"\n";
 		int ci = -1;
 		int sip1;
 		int eid, pnode, maxp, maxe, maxpcount;
+
+#ifdef SOLVER_H_MDEBUG
+std::cout<<"nof sn "<<nof_sn<<"; nof leafs "<<mama.nof_leafs<<"; si "<<si<<"; to combinatorial escape "<<(nof_sn - mama.nof_leafs )<<" \n";
+#endif
 		while(si != -1){
 
-#ifdef MDEBUG
+#ifdef SOLVER_H_MDEBUG
 std::cout<<"----------------------------------------\n";
 std::cout<<"SI "<<si<<" - PATTERN "<<map_state_to_node[si]<<"\n";
 #endif
 
-			if(psi >= si){
-				matched[solution[si]] = false;
-			}
 
-			ci = -1;
+			if(si == nof_sn - mama.nof_leafs){
 
-			if(candidateIT[si] == -1){
-				if(mama.edges_sizes[si] == 0){
-					candidateIT[si] = -1;
-					candidateITsize[si] = domains_size[  map_state_to_node[si]  ];
-				}
-				else if(mama.edges_sizes[si] == 1){
+				//std::cout<<"to leaf.................\n";
+				//we have leafs
+
+				std::set<int>  *leaf_domains = new std::set<int>[ mama.nof_leafs];
+
+				long nof_leaf_solutions = 1;
+
+				for(int l=0; l<mama.nof_leafs; l++){
 					int pstate;
-					eid = mama.edges[si][0].id;
+					eid = mama.edges[si+l][0].id;
 					
-					if(mama.edges[si][0].source == si){
-						pnode = solution[mama.edges[si][0].target];
-						pstate = mama.edges[si][0].target;
+					if(mama.edges[si+l][0].source == si+l){
+						pnode = solution[mama.edges[si+l][0].target];
+						pstate = mama.edges[si+l][0].target;
 					}
 					else{
-						pnode = solution[mama.edges[si][0].source];
-						pstate = mama.edges[si][0].source;
+						pnode = solution[mama.edges[si+l][0].source];
+						pstate = mama.edges[si+l][0].source;
 					}
 
-					candidateITpnode[si] = pnode;
-					candidateITeid[si] = eid;
-					candidateIT[si] = ce_positions[std::make_pair(pnode, eid)]  -1;
-					candidateITsize[si] = ordered_edge_domains_sizes[eid];
-#ifdef MDEBUG
-std::cout<<"single parent: eid "<<candidateITeid[si]<<"; pnode "<<pnode<<"; pstate "<<pstate<<";ce position "<<candidateIT[si]<<"\n";
-#endif
-				}
-				else{
-					maxp = -1;
-					int pstate;
-					for(int j=0; j<mama.edges_sizes[si]; j++){
-						eid = mama.edges[si][j].id;
-						if(mama.edges[si][j].source == si){
-							pnode = solution[mama.edges[si][j].target];
-						}
-						else{
-							pnode = solution[mama.edges[si][j].source];
-						}
+					candidateITpnode[si+l] = pnode;
+					candidateITeid[si+l] = eid;
+					candidateIT[si+l] = ce_positions[std::make_pair(pnode, eid)]  -1;
+					candidateITsize[si+l] = ordered_edge_domains_sizes[eid];
 
-						if((maxp==-1) || (ce_counter[std::make_pair(pnode,eid)] > maxpcount)){
-							maxp = pnode;
-							maxe = eid;
-							maxpcount = ce_counter[std::make_pair(pnode,eid)];
-
-							if(mama.edges[si][j].source == si){
-								pstate = mama.edges[si][j].target;
-							}else{
-								pstate = mama.edges[si][j].source;
+					candidateIT[si+l]++;
+					while(candidateIT[si+l] < candidateITsize[si+l]){
+						if(  ordered_edge_domains[candidateITeid[si+l]][ candidateIT[si+l] ] ==  candidateITpnode[si+l]){
+							if( !matched[ ordered_edge_domains[candidateITeid[si+l]][  candidateIT[si+l] + candidateITsize[si+l] ] ] ){
+								ci = ordered_edge_domains[candidateITeid[si+l]][  candidateIT[si+l] + candidateITsize[si+l] ];
+								//solution[si] = ci;
+								leaf_domains[l].insert(ci);
 							}
 						}
-					}
-					candidateITpnode[si] = maxp;
-					candidateITpstate[si] = pstate;
-					candidateITeid[si] = maxe;
-					candidateIT[si] = ce_positions[std::make_pair(maxp, maxe)]  -1;
-					candidateITsize[si] = ordered_edge_domains_sizes[maxe];
-
-#ifdef MDEBUG
-std::cout<<"multiple parents: eid "<<candidateITeid[si]<<"; pnode "<<maxp<<"; pstate "<<pstate<<";ce position "<<candidateIT[si]<<"\n";
-#endif
-				}
-			}
-
-			if(mama.edges_sizes[si] == 0){
-				candidateIT[si]++;
-				while(candidateIT[si] < candidateITsize[si]){
-					if(!matched[  f_domains[si][candidateIT[si]] ]){
-
-						ci = f_domains[si][candidateIT[si]];
-						
-						solution[si] = ci;
-						if(edgesCheck(si, ci, solution, matched)){
+						else{
 							break;
 						}
-						else{
-							ci = -1;
-						}
+						candidateIT[si+l]++;
 					}
-					candidateIT[si]++;
+
+					nof_leaf_solutions *= leaf_domains[l].size();
 				}
-				if(candidateIT[si] >= candidateITsize[si]){
-					ci = -1;
-				}
-			}
-			else{
-				candidateIT[si]++;
-				while(candidateIT[si] < candidateITsize[si]){
-#ifdef MDEBUG
-std::cout<<"pCI "<<candidateIT[si]
-<<"; size "<<candidateITsize[si]
-<<"; eid "
-<<candidateITeid[si]<<" "
-<<ordered_edge_domains[candidateITeid[si]][ candidateIT[si] ] <<"-"<<ordered_edge_domains[candidateITeid[si]][ candidateIT[si] + candidateITsize[si] ] <<":"
-<<ordered_edge_domains[candidateITeid[si]][ candidateIT[si] + candidateITsize[si] ] 
-<<"; pnode "<<candidateITpnode[si]
-<<"\n";
-#endif
-					if(  ordered_edge_domains[candidateITeid[si]][ candidateIT[si] ] ==  candidateITpnode[si]){
-						if( !matched[ ordered_edge_domains[candidateITeid[si]][  candidateIT[si] + candidateITsize[si] ] ] ){
-							ci = ordered_edge_domains[candidateITeid[si]][  candidateIT[si] + candidateITsize[si] ];
-							solution[si] = ci;
 
-							//std::cout<<"CANDIDATE SI "<<si<<" CI "<<ci<<"\n";
-							
-							if(mama.edges_sizes[si] > 1){
+				matchcount += nof_leaf_solutions;
 
-								bool checked = true;
-								for(int me=0; me<mama.edges_sizes[si]; me++){
-									if(  edomains.domains[ mama.edges[si][me].id ].count( 
-										std::pair<int,int>(solution[mama.edges[si][me].source],solution[mama.edges[si][me].target]) ) ==0 ){
-											checked = false;
-											break;
-									}
-								}
-								if(checked) checked &= edgesCheck(si, ci, solution, matched);
+				delete [] leaf_domains;
 
-								if(checked){
-									break;
-								}
-								else{
-									ci = -1;
-								}
-							}else{
-								break;
-							}
-							
-						}
-#ifdef MDEBUG
-						else{
-							std::cout<<"already matched\n";
-						}
-#endif
-					}
-					else{
-#ifdef MDEBUG
-std::cout<<"end of candidates\n";
-#endif
-						ci = -1;
-						break;
-					}
-					candidateIT[si]++;
-				}
-				if(candidateIT[si] >= candidateITsize[si]){
-#ifdef MDEBUG
-std::cout<<"end of candidate list\n";
-#endif
-					ci = -1;
-				}
-			}
-
-#ifdef MDEBUG
-std::cout<<"CI "<<ci<<"\n";
-#endif
-
-			if(ci == -1){
-				candidateIT[si] = -1;
 
 				psi = si;
 				si--;
+
+
+#ifdef FIRST_MATCH_ONLY
+				si = -1;
+//					return IF U WANT JUST AN INSTANCE
+#endif
+				//if(matchcount >= 100000)si = -1;
 			}
 			else{
-				matchedcouples++;
 
-				if(si == nof_sn - mama.nof_leafs - 1){
+
+
+				if(psi >= si){
+					matched[solution[si]] = false;
+				}
+
+				ci = -1;
+
+				if(candidateIT[si] == -1){
+					if(mama.edges_sizes[si] == 0){
+						candidateIT[si] = -1;
+						candidateITsize[si] = domains_size[  map_state_to_node[si]  ];
+					}
+					else if(mama.edges_sizes[si] == 1){
+						int pstate;
+						eid = mama.edges[si][0].id;
+						
+						if(mama.edges[si][0].source == si){
+							pnode = solution[mama.edges[si][0].target];
+							pstate = mama.edges[si][0].target;
+						}
+						else{
+							pnode = solution[mama.edges[si][0].source];
+							pstate = mama.edges[si][0].source;
+						}
+
+						candidateITpnode[si] = pnode;
+						candidateITeid[si] = eid;
+						candidateIT[si] = ce_positions[std::make_pair(pnode, eid)]  -1;
+						candidateITsize[si] = ordered_edge_domains_sizes[eid];
+	#ifdef SOLVER_H_MDEBUG
+	std::cout<<"single parent: eid "<<candidateITeid[si]<<"; pnode "<<pnode<<"; pstate "<<pstate<<";ce position "<<candidateIT[si]<<"\n";
+	#endif
+					}
+					else{
+						maxp = -1;
+						int pstate;
+						for(int j=0; j<mama.edges_sizes[si]; j++){
+							eid = mama.edges[si][j].id;
+							if(mama.edges[si][j].source == si){
+								pnode = solution[mama.edges[si][j].target];
+							}
+							else{
+								pnode = solution[mama.edges[si][j].source];
+							}
+
+							if((maxp==-1) || (ce_counter[std::make_pair(pnode,eid)] > maxpcount)){
+								maxp = pnode;
+								maxe = eid;
+								maxpcount = ce_counter[std::make_pair(pnode,eid)];
+
+								if(mama.edges[si][j].source == si){
+									pstate = mama.edges[si][j].target;
+								}else{
+									pstate = mama.edges[si][j].source;
+								}
+							}
+						}
+						candidateITpnode[si] = maxp;
+						candidateITpstate[si] = pstate;
+						candidateITeid[si] = maxe;
+						candidateIT[si] = ce_positions[std::make_pair(maxp, maxe)]  -1;
+						candidateITsize[si] = ordered_edge_domains_sizes[maxe];
+
+	#ifdef SOLVER_H_MDEBUG
+	std::cout<<"multiple parents: eid "<<candidateITeid[si]<<"; pnode "<<maxp<<"; pstate "<<pstate<<";ce position "<<candidateIT[si]<<"\n";
+	#endif
+					}
+				}
+
+				if(mama.edges_sizes[si] == 0){
+					candidateIT[si]++;
+					while(candidateIT[si] < candidateITsize[si]){
+						if(!matched[  f_domains[si][candidateIT[si]] ]){
+
+							ci = f_domains[si][candidateIT[si]];
+							
+							solution[si] = ci;
+							if(edgesCheck(si, ci, solution, matched)){
+								break;
+							}
+							else{
+								ci = -1;
+							}
+						}
+						candidateIT[si]++;
+					}
+					if(candidateIT[si] >= candidateITsize[si]){
+						ci = -1;
+					}
+				}
+				else{
+					candidateIT[si]++;
+					while(candidateIT[si] < candidateITsize[si]){
+	#ifdef SOLVER_H_MDEBUG
+	std::cout<<"pCI "<<candidateIT[si]
+	<<"; size "<<candidateITsize[si]
+	<<"; eid "
+	<<candidateITeid[si]<<" "
+	<<ordered_edge_domains[candidateITeid[si]][ candidateIT[si] ] <<"-"<<ordered_edge_domains[candidateITeid[si]][ candidateIT[si] + candidateITsize[si] ] <<":"
+	<<ordered_edge_domains[candidateITeid[si]][ candidateIT[si] + candidateITsize[si] ] 
+	<<"; pnode "<<candidateITpnode[si]
+	<<"\n";
+	#endif
+						if(  ordered_edge_domains[candidateITeid[si]][ candidateIT[si] ] ==  candidateITpnode[si]){
+							if( !matched[ ordered_edge_domains[candidateITeid[si]][  candidateIT[si] + candidateITsize[si] ] ] ){
+								ci = ordered_edge_domains[candidateITeid[si]][  candidateIT[si] + candidateITsize[si] ];
+								solution[si] = ci;
+
+								//std::cout<<"CANDIDATE SI "<<si<<" CI "<<ci<<"\n";
+								
+								if(mama.edges_sizes[si] > 1){
+
+									bool checked = true;
+									for(int me=0; me<mama.edges_sizes[si]; me++){
+										if(  edomains.domains[ mama.edges[si][me].id ].count( 
+											std::pair<int,int>(solution[mama.edges[si][me].source],solution[mama.edges[si][me].target]) ) ==0 ){
+												checked = false;
+												break;
+										}
+									}
+									if(checked) checked &= edgesCheck(si, ci, solution, matched);
+
+									if(checked){
+										break;
+									}
+									else{
+										ci = -1;
+									}
+								}else{
+									break;
+								}
+								
+							}
+	#ifdef SOLVER_H_MDEBUG
+							else{
+								std::cout<<"already matched\n";
+							}
+	#endif
+						}
+						else{
+	#ifdef SOLVER_H_MDEBUG
+	std::cout<<"end of candidates\n";
+	#endif
+							ci = -1;
+							break;
+						}
+						candidateIT[si]++;
+					}
+					if(candidateIT[si] >= candidateITsize[si]){
+	#ifdef SOLVER_H_MDEBUG
+	std::cout<<"end of candidate list\n";
+	#endif
+						ci = -1;
+					}
+				}
+
+	#ifdef SOLVER_H_MDEBUG
+	std::cout<<"CI "<<ci<<"\n";
+	#endif
+
+				if(ci == -1){
+					candidateIT[si] = -1;
+
+					psi = si;
+					si--;
+				}
+				else{
+					matchedcouples++;
 
 					if(si == nof_sn -1){
 						//there are no leafs
@@ -1081,75 +1150,26 @@ std::cout<<"CI "<<ci<<"\n";
 						#endif
 						matchcount++;
 						psi = si;
-					}else{
 
-						//std::cout<<"to leaf.................\n";
-						//we have leafs
 
-						std::set<int>  *leaf_domains = new std::set<int>[ mama.nof_leafs];
+	#ifdef FIRST_MATCH_ONLY
+							si = -1;
+		//					return IF U WANT JUST AN INSTANCE
+	#endif
+							//if(matchcount >= 100000)si = -1;
 
-						int nof_leaf_solutions = 1;
 
-						for(int l=0; l<mama.nof_leafs; l++){
-							int pstate;
-							eid = mama.edges[si+l][0].id;
-							
-							if(mama.edges[si+l][0].source == si+l){
-								pnode = solution[mama.edges[si+l][0].target];
-								pstate = mama.edges[si+l][0].target;
-							}
-							else{
-								pnode = solution[mama.edges[si+l][0].source];
-								pstate = mama.edges[si+l][0].source;
-							}
-
-							candidateITpnode[si+l] = pnode;
-							candidateITeid[si+l] = eid;
-							candidateIT[si+l] = ce_positions[std::make_pair(pnode, eid)]  -1;
-							candidateITsize[si+l] = ordered_edge_domains_sizes[eid];
-
-							candidateIT[si+l]++;
-							while(candidateIT[si+l] < candidateITsize[si+l]){
-								if(  ordered_edge_domains[candidateITeid[si+l]][ candidateIT[si+l] ] ==  candidateITpnode[si+l]){
-									if( !matched[ ordered_edge_domains[candidateITeid[si+l]][  candidateIT[si+l] + candidateITsize[si+l] ] ] ){
-										ci = ordered_edge_domains[candidateITeid[si+l]][  candidateIT[si+l] + candidateITsize[si+l] ];
-										//solution[si] = ci;
-										leaf_domains[l].insert(ci);
-									}
-								}
-								else{
-									break;
-								}
-								candidateIT[si+l]++;
-							}
-
-							nof_leaf_solutions *= leaf_domains[l].size();
-						}
-
-						matchcount += nof_leaf_solutions;
-
-						delete [] leaf_domains;
-
+					}
+					else{
+						matched[solution[si]] = true;
+						sip1 = si+1;
+						//candidatesIT[si +1] = -1;
+						psi = si;
+						si++;
 					}
 
 
-#ifdef FIRST_MATCH_ONLY
-						si = -1;
-	//					return IF U WANT JUST AN INSTANCE
-#endif
-						//if(matchcount >= 100000)si = -1;
-
-
 				}
-				else{
-					matched[solution[si]] = true;
-					sip1 = si+1;
-					//candidatesIT[si +1] = -1;
-					psi = si;
-					si++;
-				}
-
-
 			}
 
 		}

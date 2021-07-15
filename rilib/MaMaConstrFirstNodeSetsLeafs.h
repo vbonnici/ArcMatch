@@ -117,11 +117,22 @@ public:
 					if(i!=j){
 						if(good_leafs[j] && (!bad_leafs[j])){
 							if( ! domains[i].emptyAND(domains[j]) ){
-								//bad_leafs[i] = true;
-								bad_leafs[j] = true;
+
+								if(domains_size[j] >= domains_size[i]){
+									//bad_leafs[i] = true;
+									bad_leafs[j] = true;
 #ifdef MAMACONSTRFIRSTNODESETSLEAFS_H_MDEBUG
-								std::cout<<"rmeoved leaf "<<j<<" by "<<i<<" \n";
+								std::cout<<"remove leaf "<<j<<" by "<<i<<" \n";
 #endif
+								}
+								else{
+									bad_leafs[i] = true;
+#ifdef MAMACONSTRFIRSTNODESETSLEAFS_H_MDEBUG
+								std::cout<<"remove leaf "<<i<<" by "<<j<<" \n";
+#endif	
+									break;
+								}
+								
 							}
 						}
 					}
@@ -131,6 +142,7 @@ public:
 
 
 		int leafi = nof_sn-1;
+		nof_leafs = 0;
 
 		for(int i=0; i<nof_sn; i++){
 			if(good_leafs[i] && (!bad_leafs[i])){
@@ -140,13 +152,16 @@ public:
 				map_state_to_node[leafi] = i;
 				map_node_to_state[i] = leafi;
 				leafi--;
+				nof_leafs++;
 			}
 			else{
 				good_leafs[i] = false;
 			}
 		}
-
-		nof_leafs = nof_sn - leafi + 1;
+#ifdef MAMACONSTRFIRSTNODESETSLEAFS_H_MDEBUG
+				std::cout<<"nof leafs = "<<nof_leafs<<" \n";
+#endif	
+		//nof_leafs = nof_sn - leafi + 1;
 
 
 
@@ -227,7 +242,11 @@ public:
 				std::cout<<i<<"["<<node_flags[i]<<"] ";
 			}
 			std::cout<<"\n";
+#endif
+		}
 
+
+#ifdef MAMACONSTRFIRSTNODESETSLEAFS_H_MDEBUG
 			std::cout<<"node to state: ";
 			for(int i=0; i<nof_sn; i++){
 				std::cout<<i<<"["<< map_node_to_state[i]<<"] ";
@@ -239,8 +258,6 @@ public:
 			}
 			std::cout<<"\n";
 #endif
-		}
-
 
 		int e_count,o_e_count,i_e_count,n,nn;
 		for(int si = 0; si<nof_sn; si++){
