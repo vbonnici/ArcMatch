@@ -79,6 +79,8 @@ public:
 	int* parent_state;				//indexed by state_id
 	MAMA_PARENTTYPE* parent_type;	//indexed by state id
 
+	int nof_leafs;
+
 
 	MatchingMachine(Graph& query){
 #ifdef MDEBUG
@@ -95,6 +97,8 @@ public:
 		map_state_to_node = (int*) calloc(nof_sn, sizeof(int));
 		parent_state = (int*) calloc(nof_sn, sizeof(int));
 		parent_type = new MAMA_PARENTTYPE[nof_sn];
+
+		nof_leafs = 0; //only used by MaMaxxxLeafs
 #ifdef MDEBUG
 	std::cout<<"done...\n";
 #endif

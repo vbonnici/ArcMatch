@@ -1072,19 +1072,74 @@ std::cout<<"CI "<<ci<<"\n";
 			else{
 				matchedcouples++;
 
-				if(si == nof_sn -1){
-					#ifdef PRINT_MATCHES
-					matchListener.match(nof_sn, map_state_to_node, solution);
-					#endif
-					matchcount++;
+				if(si == nof_sn - mama.nof_leafs - 1){
+
+					if(si == nof_sn -1){
+						//there are no leafs
+						#ifdef PRINT_MATCHES
+						matchListener.match(nof_sn, map_state_to_node, solution);
+						#endif
+						matchcount++;
+						psi = si;
+					}else{
+
+						//std::cout<<"to leaf.................\n";
+						//we have leafs
+
+						std::set<int>  *leaf_domains = new std::set<int>[ mama.nof_leafs];
+
+						int nof_leaf_solutions = 1;
+
+						for(int l=0; l<mama.nof_leafs; l++){
+							int pstate;
+							eid = mama.edges[si+l][0].id;
+							
+							if(mama.edges[si+l][0].source == si+l){
+								pnode = solution[mama.edges[si+l][0].target];
+								pstate = mama.edges[si+l][0].target;
+							}
+							else{
+								pnode = solution[mama.edges[si+l][0].source];
+								pstate = mama.edges[si+l][0].source;
+							}
+
+							candidateITpnode[si+l] = pnode;
+							candidateITeid[si+l] = eid;
+							candidateIT[si+l] = ce_positions[std::make_pair(pnode, eid)]  -1;
+							candidateITsize[si+l] = ordered_edge_domains_sizes[eid];
+
+							candidateIT[si+l]++;
+							while(candidateIT[si+l] < candidateITsize[si+l]){
+								if(  ordered_edge_domains[candidateITeid[si+l]][ candidateIT[si+l] ] ==  candidateITpnode[si+l]){
+									if( !matched[ ordered_edge_domains[candidateITeid[si+l]][  candidateIT[si+l] + candidateITsize[si+l] ] ] ){
+										ci = ordered_edge_domains[candidateITeid[si+l]][  candidateIT[si+l] + candidateITsize[si+l] ];
+										//solution[si] = ci;
+										leaf_domains[l].insert(ci);
+									}
+								}
+								else{
+									break;
+								}
+								candidateIT[si+l]++;
+							}
+
+							nof_leaf_solutions *= leaf_domains[l].size();
+						}
+
+						matchcount += nof_leaf_solutions;
+
+						delete [] leaf_domains;
+
+					}
 
 
-					psi = si;
 #ifdef FIRST_MATCH_ONLY
-					si = -1;
-//					return IF U WANT JUST AN INSTANCE
+						si = -1;
+	//					return IF U WANT JUST AN INSTANCE
 #endif
-					//if(matchcount >= 100000)si = -1;
+						//if(matchcount >= 100000)si = -1;
+
+
 				}
 				else{
 					matched[solution[si]] = true;
@@ -1093,6 +1148,8 @@ std::cout<<"CI "<<ci<<"\n";
 					psi = si;
 					si++;
 				}
+
+
 			}
 
 		}

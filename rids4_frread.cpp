@@ -74,7 +74,8 @@ RE|NRE  (reduce or not edge domains)				REDUCE_EDGES is on for RE
 
 //#define SOLVER_0 //simple solver with edge domains
 //#define SOLVER_ED //simple solver which exploits edge domains
-#define SOLVER_DP //solver with dynamic parent selection
+//#define SOLVER_DP //solver with dynamic parent selection
+#define SOLVER_LF //solver with dynamic parent selection and leafs
 
 #define PATH_LENGTH 6
 //#define PATH_LENGTH 9
@@ -498,6 +499,10 @@ int match(
 
 						#ifdef SOLVER_DP
 						solver->solve_rp();
+						#endif
+
+						#ifdef SOLVER_LF
+						solver->solve_leafs();
 						#endif
 
 

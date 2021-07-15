@@ -34,7 +34,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef MAMACONSTRFIRSTNODESETSLEAFS_H_
 #define MAMACONSTRFIRSTNODESETSLEAFS_H_
 
-#define MAMACONSTRFIRSTNODESETSLEAFS_H_MDEBUG 1
+//#define MAMACONSTRFIRSTNODESETSLEAFS_H_MDEBUG 1
 
 #include "Graph.h"
 #include "sbitset.h"
@@ -145,6 +145,8 @@ public:
 				good_leafs[i] = false;
 			}
 		}
+
+		nof_leafs = nof_sn - leafi + 1;
 
 
 
