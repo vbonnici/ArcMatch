@@ -51,9 +51,9 @@ int read_dbgraph(const char* filename, FileReader* fd, Graph* g, enum GRAPH_FILE
 	case GFT_EGFD:
 		ret = read_egfd(filename, fd, g);
 		break;
-	case GFT_LAD:
+	//case GFT_LAD:
 		//ret = read_lad(filename, fd, g);
-		break;
+	//	break;
 	}
 
 	return ret;
@@ -79,9 +79,9 @@ int read_graph(const char* filename, Graph* g, enum GRAPH_FILE_TYPE type){
 	case GFT_EGFD:
 		ret = read_egfd(filename, fd, g);
 		break;
-	case GFT_LAD:
+	//case GFT_LAD:
 		//ret = read_lad(filename, fd, g);
-		break;
+	//	break;
 	}
 
 	fd->close();
@@ -537,6 +537,8 @@ int read_egfu(const char* fileName, FileReader* fd, Graph* graph){
 
 
 int read_egfd(const char* fileName, FileReader* fd, Graph* graph){
+	std::cout<<"reading............\n";
+
 	char str[STR_READ_LENGTH];
 	int i,j;
 
@@ -589,6 +591,8 @@ int read_egfd(const char* fileName, FileReader* fd, Graph* graph){
 		// if (fscanf(fd,"%s",label) != 1){
 		// 	return -1;
 		// }
+
+		//std::cout<<es<<" "<<et<<" "<<label<<"\n";
 
 		graph->out_adj_sizes[es]++;
 		graph->in_adj_sizes[et]++;

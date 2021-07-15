@@ -312,11 +312,13 @@ int match(
 	std::cout<<"reading reference...\n";
 #endif
 			int rret = read_dbgraph(referencefile.c_str(), fd, rrg, filetype);
-			rreaded = fd->is_valid();
+			//rreaded = fd->is_valid();
+			rreaded = true;
 			load_t+=end_time(load_s);
 
 
 			if(rreaded){
+
 				if(!doBijIso ||
 					(doBijIso && (query->nof_nodes == rrg->nof_nodes))){
 
@@ -534,7 +536,8 @@ int match(
 			i++;
 
 			
-		}while(rreaded);
+		//}while(rreaded);
+		}while( fd->is_valid());
 
 #ifdef MDEBUG
 	std::cout<<"all done\n";
