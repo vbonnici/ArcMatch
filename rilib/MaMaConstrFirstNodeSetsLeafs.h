@@ -34,7 +34,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef MAMACONSTRFIRSTNODESETSLEAFS_H_
 #define MAMACONSTRFIRSTNODESETSLEAFS_H_
 
-//#define MAMACONSTRFIRSTNODESETSLEAFS_H_MDEBUG 1
+#define MAMACONSTRFIRSTNODESETSLEAFS_H_MDEBUG 1
 
 #include "Graph.h"
 #include "sbitset.h"
@@ -57,6 +57,11 @@ public:
 	}
 
 	virtual void build(Graph& ssg){
+
+#ifdef MAMACONSTRFIRSTNODESETSLEAFS_H_MDEBUG
+		ssg.print();
+#endif
+
 		NodeFlag* node_flags = new NodeFlag[nof_sn]; 						//indexed by node_id
 		for(int i=0; i<nof_sn; i++){
 			node_flags[i] = NS_UNV;
@@ -88,18 +93,36 @@ public:
 				for(int j=0; j< ssg.in_adj_sizes[i]; j++){
 					neighs.insert(ssg.in_adj_list[i][j]);
 				}
+#ifdef MAMACONSTRFIRSTNODESETSLEAFS_H_MDEBUG
+				std::cout<<i<<" nof neighs "<<neighs.size()<<"\n";
+#endif
 				if(neighs.size() == 1){
 					good_leafs[i] = true;
 				}
 			}
 		}
+
+#ifdef MAMACONSTRFIRSTNODESETSLEAFS_H_MDEBUG
+		std::cout<<"preliminary leafs: ";
 		for(int i=0; i<nof_sn; i++){
 			if(good_leafs[i]){
+				std::cout<<i<<" ";
+			}
+		}
+		std::cout<<"\n";
+#endif
+		for(int i=0; i<nof_sn; i++){
+			if(good_leafs[i] && (!bad_leafs[i])){
 				for(int j=0; j<nof_sn; j++){
-					if(good_leafs[j]){
-						if( ! domains[i].emptyAND(domains[j]) ){
-							bad_leafs[i] = true;
-							bad_leafs[j] = true;
+					if(i!=j){
+						if(good_leafs[j] && (!bad_leafs[j])){
+							if( ! domains[i].emptyAND(domains[j]) ){
+								//bad_leafs[i] = true;
+								bad_leafs[j] = true;
+#ifdef MAMACONSTRFIRSTNODESETSLEAFS_H_MDEBUG
+								std::cout<<"rmeoved leaf "<<j<<" by "<<i<<" \n";
+#endif
+							}
 						}
 					}
 				}
@@ -110,16 +133,16 @@ public:
 		int leafi = nof_sn-1;
 
 		for(int i=0; i<nof_sn; i++){
-			if(good_leafs[i] && bad_leafs[i]){
-				good_leafs[i] = false;
-			}
-			else{
+			if(good_leafs[i] && (!bad_leafs[i])){
 #ifdef MAMACONSTRFIRSTNODESETSLEAFS_H_MDEBUG
 				std::cout<<"leaf vertex "<<i<<" at "<<leafi<<"\n";
 #endif				
 				map_state_to_node[leafi] = i;
 				map_node_to_state[i] = leafi;
 				leafi--;
+			}
+			else{
+				good_leafs[i] = false;
 			}
 		}
 
@@ -133,7 +156,7 @@ public:
 		std::cout<<"\n";
 #endif
 
-		for( ; si<nof_sn - leafi + 1; si++){
+		for( ; si<leafi + 1; si++){
 
 #ifdef MAMACONSTRFIRSTNODESETSLEAFS_H_MDEBUG
 			std::cout<<"SI["<<si<<"]\n";
@@ -156,7 +179,7 @@ public:
 #endif
 
 			for(int nid=0; nid<nof_sn; nid++){
-				if( node_flags[nid] == NS_CNEIGH ){
+				if( (node_flags[nid] == NS_CNEIGH) && (!good_leafs[nid]) ){
 					if(best_nid == -1){
 						best_nid = nid;
 						get_scores(nid, best_nid_score, node_flags, ssg);
@@ -175,7 +198,7 @@ public:
 
 			if(best_nid == -1){//firs node without singletons or disconnected query
 				for(int nid=0; nid<nof_sn; nid++){
-					if( node_flags[nid] == NS_UNV ){
+					if( (node_flags[nid] == NS_UNV)  && (!good_leafs[nid])  ){
 						if(best_nid == -1){
 							best_nid = nid;
 							get_scores(nid, best_nid_score, node_flags, ssg);
@@ -200,6 +223,17 @@ public:
 #ifdef MAMACONSTRFIRSTNODESETSLEAFS_H_MDEBUG
 			for(int i=0; i<nof_sn; i++){
 				std::cout<<i<<"["<<node_flags[i]<<"] ";
+			}
+			std::cout<<"\n";
+
+			std::cout<<"node to state: ";
+			for(int i=0; i<nof_sn; i++){
+				std::cout<<i<<"["<< map_node_to_state[i]<<"] ";
+			}
+			std::cout<<"\n";
+			std::cout<<"state to node: ";
+			for(int i=0; i<nof_sn; i++){
+				std::cout<<i<<"["<< map_state_to_node[i]<<"] ";
 			}
 			std::cout<<"\n";
 #endif
@@ -229,6 +263,11 @@ public:
 			edges_sizes[si] = e_count;
 			o_edges_sizes[si] = o_e_count;
 			i_edges_sizes[si] = i_e_count;
+
+
+#ifdef MAMACONSTRFIRSTNODESETSLEAFS_H_MDEBUG
+			std::cout<<"si["<<si<<"] n["<<n<<"] e_cout["<<e_count<<"] o_count["<<o_e_count<<"] i_count["<<i_e_count<<"]\n";
+#endif
 
 			edges[si] = new MaMaEdge[e_count];
 

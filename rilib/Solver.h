@@ -778,9 +778,6 @@ std::cout<<"CI "<<ci<<"\n";
 
 	void solve_leafs(){
 
-
-
-
 		int nof_sn 						= mama.nof_sn;
 		int* map_node_to_state 			= mama.map_node_to_state;			//indexed by node_id
 		int* map_state_to_node 			= mama.map_state_to_node;			//indexed by state_id
@@ -893,7 +890,6 @@ std::cout<<"IN eid: "<<eid<<";k "<<k<<": "<<eit->first<<"-"<<eit->second<<"\n";
 			solution[i] = -1;
 
 		bool* matched = (bool*) calloc(rgraph.nof_nodes, sizeof(bool));		//indexed by node_id
-
 
 
 		int psi = -1;
