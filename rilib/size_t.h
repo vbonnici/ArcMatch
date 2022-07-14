@@ -1,8 +1,5 @@
 /*
  * gmsize_t.h
- *
- *  Created on: Dec 17, 2011
- *      Author: bovi
  */
 
 #ifndef GMSIZE_T_H_
