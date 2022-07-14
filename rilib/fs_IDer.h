@@ -1,16 +1,14 @@
 /*
  * IDer.h
  *
- *  Created on: Dec 14, 2011
- *      Author: bovi
  */
 /*
-Copyright (c) 2014 by Rosalba Giugno
+Copyright (c) 2022
 
 This library contains portions of other open source products covered by separate
 licenses. Please see the corresponding source files for specific terms.
 
-RI is provided under the terms of The MIT License (MIT):
+ArcMatch is provided under the terms of The MIT License (MIT):
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
