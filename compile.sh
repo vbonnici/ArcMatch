@@ -94,3 +94,8 @@ additional="-DFIRST_100k_MATCHES"
 
 g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t7 $additional  -o arcmatch-100k
 g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t13 $additional -o arcmatch-lt-100k
+
+additional="-DFIRST_MATCH_ONLY"
+
+g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t7 $additional  -o arcmatch-first
+g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t13 $additional -o arcmatch-lt-first
