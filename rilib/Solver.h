@@ -956,6 +956,10 @@ std::cout<<"SI "<<si<<" - PATTERN "<<map_state_to_node[si]<<"\n";
 
 				matchcount += nof_leaf_solutions;
 
+				#ifdef PRINT_MATCHES
+				matchListener.match_multiple(nof_sn, map_state_to_node, solution, si, leaf_domains);
+				#endif
+
 				delete [] leaf_domains;
 
 

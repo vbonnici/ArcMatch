@@ -1,11 +1,4 @@
 /*
- * ri3.cpp
- *
- *  Created on: Aug 2, 2012
- *      Author: vbonnici
- */
-
-/*
 
 This library contains portions of other open source products covered by separate
 licenses. Please see the corresponding source files for specific terms.
@@ -51,6 +44,7 @@ RE|NRE  (reduce or not edge domains)				REDUCE_EDGES is on for RE
 ]
 */
 
+
 //#define MDEBUG
 
 //#define PRINT_MATCHES
@@ -81,8 +75,6 @@ RE|NRE  (reduce or not edge domains)				REDUCE_EDGES is on for RE
 //#define PATH_LENGTH 9
 
 
-
-
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -109,12 +101,10 @@ RE|NRE  (reduce or not edge domains)				REDUCE_EDGES is on for RE
 
 #include "MatchListener.h"
 
-//#define FIRST_MATCH_ONLY  //if setted, the searching process stops at the first found match
 #include "Solver.h"
 #include "SubGISolver.h"
 #include "InducedSubGISolver.h"
 #include "Domains.h"
-
 
 /*#include <unordered_set>
 #include <tuple>
@@ -142,6 +132,9 @@ int match(MATCH_TYPE matchtype, GRAPH_FILE_TYPE filetype,	std::string& reference
 
 
 int main(int argc, char* argv[]){
+#ifdef PRINT_MATCHES
+	std::cout<<"DIRECTIVE PRINT_MATCHES is on\n";
+#endif
 
 	/*
 	unordered_edge_set* domains;
@@ -325,9 +318,9 @@ int match(
 					//initialize domains
 					sbitset *domains = new sbitset[query->nof_nodes];
 					match_s=start_time();
-#ifdef MDEBUG
-	std::cout<<"initializing domain...\n";
-#endif
+
+					std::cout<<"initializing domain...\n";
+
 					s_tmp = start_time();
 					bool domok = init_domains(*rrg, *query, *nodeComparator, *edgeComparator, domains, doBijIso);
 					t_tmp = end_time(s_tmp);
@@ -338,10 +331,7 @@ int match(
 					//if domain constraints are satisfied (at least one compatible target node for each query node)
 					if(domok){
 						std:cout<<"domain ok\n";
-
-#ifdef MDEBUG
-	std::cout<<"initializing edge domain...\n";
-#endif
+						std::cout<<"initializing edge domain...\n";
 
 						match_s=start_time();
 
@@ -359,7 +349,7 @@ int match(
 
 						s_tmp = start_time();
 
-						#ifdef REDUCE_EDGES
+#ifdef REDUCE_EDGES
 						DomainReduction dr(*query, domains, edomains, rrg->nof_nodes);
 						std::cout<<"edomain reduction\n";
 						dr.reduce_by_paths(PATH_LENGTH);
@@ -367,7 +357,7 @@ int match(
 						std::cout<<"edomain refinement\n";
 						dr.final_refinement();
 						std::cout<<"edomain done\n";
-						#endif
+#endif
 
 						t_tmp = end_time(s_tmp);
 						std::cout<<":time: reduce edomains "<<t_tmp<<"\n";
@@ -378,9 +368,7 @@ int match(
 						print_domains(*query, *rrg, domains,edomains);
 #endif
 
-#ifdef MDEBUG
-	std::cout<<"building matching machine...\n";
-#endif
+						std::cout<<"building matching machine...\n";
 
 						//just get the domain size for each query node
 						int *domains_size = new int[query->nof_nodes];
@@ -398,9 +386,9 @@ int match(
 							*/
 						}
 
-						for(int ii=0; ii<query->nof_nodes; ii++){
-							std::cout<<ii<<" "<<query->out_adj_sizes[ii]<<" "<<domains_size[ii]<<"\n";
-						}
+						//for(int ii=0; ii<query->nof_nodes; ii++){
+						//	std::cout<<ii<<" "<<query->out_adj_sizes[ii]<<" "<<domains_size[ii]<<"\n";
+						//}
 
 
 						//build the static matching machine

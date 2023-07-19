@@ -43,6 +43,7 @@ public:
 	}
 	virtual ~MatchListener(){};
 	virtual void match(int n, int* qIDs, int* rIDs)=0;
+	virtual void match_multiple(int n, int* qIDs, int* rIDs, int si, std::set<int>  *leaf_domains)=0;
 };
 
 
@@ -52,6 +53,10 @@ public:
 	}
 	virtual void match(int n, int* qIDs, int* rIDs){
 		matchcount++;
+	};
+
+	virtual void match_multiple(int n, int* qIDs, int* rIDs, int si, std::set<int>  *leaf_domains){
+		//TODO
 	};
 };
 
@@ -63,10 +68,29 @@ public:
 		matchcount++;
 		std::cout<< "{";
 		for(int i=0; i<n; i++){
-			std::cout<< "("<< qIDs[i] <<","<< rIDs[i] <<")";
+			std::cout<< "M:("<< qIDs[i] <<","<< rIDs[i] <<")";
 		}
 		std::cout<< "}\n";
 	}
+	virtual void match_multiple(int n, int* qIDs, int* rIDs, int si, std::set<int>  *leaf_domains){
+		matchcount++;
+		std::cout<< "M:{";
+		for(int i=0; i<si; i++){
+			std::cout<< "("<< qIDs[i] <<","<< rIDs[i] <<")";
+		}
+		for(int i=si; i<n; i++){
+			std::cout<< "("<< qIDs[i] <<",[";//<< leaf_domains[i-si].size() 
+			int nof = leaf_domains[i-si].size();
+			int ci = 0;
+			for ( auto it = leaf_domains[i-si].begin(); it != leaf_domains[i-si].end(); it++ ){
+				std::cout<< (*it);
+				if(ci < nof-1) std::cout<<",";
+				ci++;
+			}
+			std::cout<<"])";
+		}
+		std::cout<< "}\n";
+	};
 };
 
 }
