@@ -66,9 +66,9 @@ public:
 	}
 	virtual void match(int n, int* qIDs, int* rIDs){
 		matchcount++;
-		std::cout<< "{";
+		std::cout<< "M:{";
 		for(int i=0; i<n; i++){
-			std::cout<< "M:("<< qIDs[i] <<","<< rIDs[i] <<")";
+			std::cout<< "("<< qIDs[i] <<","<< rIDs[i] <<")";
 		}
 		std::cout<< "}\n";
 	}

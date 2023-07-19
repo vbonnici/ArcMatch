@@ -137,6 +137,7 @@ public:
 			}
 		}
 
+		matchcount = 0;
 
 		int psi = -1;
 		int si = 0;
@@ -197,11 +198,16 @@ public:
 
 				if(si == nof_sn -1){
 					matchListener.match(nof_sn, map_state_to_node, solution);
+
+					matchcount++;
+
 					psi = si;
 #ifdef FIRST_MATCH_ONLY
 					si = -1;
 #endif
-//					return IF U WANT JUST AN INSTANCE;
+#ifdef FIRST_100k_MATCHES
+					if(matchcount >= 100000)si = -1;
+#endif
 				}
 				else{
 					matched[solution[si]] = true;
@@ -248,7 +254,7 @@ public:
 		int* candidatesIT = new int[nof_sn];							//indexed by state_id
 		int* candidatesSize = new int[nof_sn];							//indexed by state_id
 
-
+		matchcount = 0;
 		
 		int* solution = new int[nof_sn];								//indexed by state_id
 		for(ii=0; ii<nof_sn; ii++)
@@ -382,13 +388,18 @@ std::cout<<"-----\n";
 				matchedcouples++;
 
 				if(si == nof_sn -1){
+
 					matchListener.match(nof_sn, map_state_to_node, solution);
+					
+					matchcount++;
+
 					psi = si;
 #ifdef FIRST_MATCH_ONLY
 					si = -1;
 #endif
-					//if(matchListener.matchcount >= 100000)si = -1;
-//					return IF U WANT JUST AN INSTANCE;
+#ifdef FIRST_100k_MATCHES
+					if(matchcount >= 100000)si = -1;
+#endif
 				}
 				else{
 					matched[solution[si]] = true;
@@ -427,6 +438,8 @@ struct hash_pair {
 
 		cand_ecount_t ce_counter;
 		cand_ecount_t ce_positions;
+
+		matchcount = 0;
 
 
 #ifdef MDEBUG
@@ -748,9 +761,9 @@ std::cout<<"CI "<<ci<<"\n";
 					//std::cout<<matchListener.matchcount<<"\n";
 					
 					//matchListener.match(nof_sn, map_state_to_node, solution);
-					#ifdef PRINT_MATCHES
+#ifdef PRINT_MATCHES
 					matchListener.match(nof_sn, map_state_to_node, solution);
-					#endif
+#endif
 					matchcount++;
 
 
@@ -759,7 +772,9 @@ std::cout<<"CI "<<ci<<"\n";
 					si = -1;
 //					return IF U WANT JUST AN INSTANCE
 #endif
-					//if(matchcount >= 100000)si = -1;
+#ifdef FIRST_100k_MATCHES
+					if(matchcount >= 100000)si = -1;
+#endif
 				}
 				else{
 					matched[solution[si]] = true;
@@ -971,6 +986,9 @@ std::cout<<"SI "<<si<<" - PATTERN "<<map_state_to_node[si]<<"\n";
 				si = -1;
 //					return IF U WANT JUST AN INSTANCE
 #endif
+#ifdef FIRST_100k_MATCHES
+					if(matchcount >= 100000)si = -1;
+#endif
 				//if(matchcount >= 100000)si = -1;
 			}
 			else{
@@ -1154,10 +1172,13 @@ std::cout<<"SI "<<si<<" - PATTERN "<<map_state_to_node[si]<<"\n";
 						psi = si;
 
 
-	#ifdef FIRST_MATCH_ONLY
+#ifdef FIRST_MATCH_ONLY
 							si = -1;
 		//					return IF U WANT JUST AN INSTANCE
-	#endif
+#endif
+#ifdef FIRST_100k_MATCHES
+					if(matchcount >= 100000)si = -1;
+#endif
 							//if(matchcount >= 100000)si = -1;
 
 

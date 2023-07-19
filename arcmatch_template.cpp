@@ -27,17 +27,17 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /*
 Nomenclature
-rids4_
+archmatch_
 [
-FR													custom file reader
+FR													custom file reader (w.r.t. RI versions). always on
 _	
 NODE_D_CONVERGENCE=0(inactive),1(active)			NODE_D_CONV is on for 1
 EDGE_D_CONVERGENCE=0(inactive),1(active)			EDGE_D_CONV is on for 1
 _
 ]
-1|0|FC|AC|NS|NSç												MAMA_0 is on for 0
+1|0|FC|AC|NS|NSL									
 _
-0|ED|DP												SOLVER_0 is on for 0
+0|ED|DP|LF											
 [
 _
 RE|NRE  (reduce or not edge domains)				REDUCE_EDGES is on for RE
@@ -51,9 +51,10 @@ RE|NRE  (reduce or not edge domains)				REDUCE_EDGES is on for RE
 //#define CSV_FORMAT
 
 //#define FIRST_MATCH_ONLY  //if setted, the searching process stops at the first found match
+//#define FIRST_100k_MATCHES //stop at the first 100k matches
 
-#define NODE_D_CONV	//refine node domains until convergence
-#define EDGE_D_CONV	//refine edge domains until convergence
+//#define NODE_D_CONV	//refine node domains until convergence
+//#define EDGE_D_CONV	//refine edge domains until convergence
 
 //#define REDUCE_EDGES
 
@@ -63,15 +64,15 @@ RE|NRE  (reduce or not edge domains)				REDUCE_EDGES is on for RE
 //#define MAMA_FC //mama by centrality flooding
 //#define MAMA_AC //matching machine with angular coefficient
 //#define MAMA_NS //the real original order with node sets for flags
-#define MAMA_NSL //the real original order with node sets for flags, with disjoint leafs at the end of the ordering
+//#define MAMA_NSL //the real original order with node sets for flags, with disjoint leafs at the end of the ordering
 //#define MAMA_CC //ordering by taking into account core compatibility
 
 //#define SOLVER_0 //simple solver with edge domains
 //#define SOLVER_ED //simple solver which exploits edge domains
 //#define SOLVER_DP //solver with dynamic parent selection
-#define SOLVER_LF //solver with dynamic parent selection and leafs
+//#define SOLVER_LF //solver with dynamic parent selection and leafs
 
-#define PATH_LENGTH 6
+//#define PATH_LENGTH 6
 //#define PATH_LENGTH 9
 
 
