@@ -4,7 +4,7 @@
 
 <hr />
 
-### Description
+## Description
 ***ArcMatch*** is a general-purpose algorithm for one-to-one exact subgraph isomorphism problems by maintaining topological constraints.
 It is based on the concept of vertex and edge domains ( feasible candidate elements) by introducing a new path-based technique for filtering such domains 
 and by exploiting the information coming from them at all levels of the search process.
@@ -16,20 +16,20 @@ Please read the scientific paper for further details about the methodology of **
 
 <hr />
 
-### License
+## License
 ArcMatch is distributed under the MIT license. This means that it is free for both academic and commercial use. Note however that some third-party components in ArcMatch require that you reference certain works in scientific publications.
 You are free to link or use ArcMatch inside the source code of your own program. If do so, please reference (cite) ArcMatch and this website. We appreciate bug fixes and would be happy to collaborate for improvements. 
 
 <hr />
 
-### Requirements
+## Requirements
 
 ***ArcMatch*** is developed in C++. Thus, an operating system with g++ compiler must be available to compile and use the software.
 No dependencies out of the standard GNU C++ library are required.
 
 <hr />
 
-### Usage
+## Usage
 
 Before using the ***ArcMatch*** command line interface of all the distributions, please compile them by typing  `bash compile.sh`.
 The `compile.sh` script generates a series of executables that were used for assessing the performance of ***ArcMatch***,
@@ -48,7 +48,7 @@ Details regarding the output forms of the matches are given in what follows.
 
 Lastly, specific versions of `arcmatch` and `arcmatch-lt` are provided for stopping at the first found match or after 100k matches.
 
-#### Command line itnerface
+### Command line itnerface
 
 All versions of ***ArcMatch*** take as input the same parameters:
 ```
@@ -67,7 +67,7 @@ All versions of ***ArcMatch*** take as input the same parameters:
 |ged	|directed graphs with attributes both on nodes and edges.|
 |geu	|undirected graphs with attributes both on nodes and edges.|
 
-#### Input graph file format
+### Input graph file format
 
 ***ArcMatch*** is able to read two graph file formats, gfu and gfd, for undirected and directed graphs, respectively, with attributes on nodes and/or edges.
 
@@ -119,7 +119,7 @@ Br <br>
 0 3 k<br>
 0 2 a<br>
 
-#### Output match format
+### Output match format
 When the print of matches is enabled, a basic behaviour of the tool is to print one match per line.
 The line is prefixed by `M:`.
 The match is embedded between curly brackets.
@@ -144,7 +144,7 @@ The order within the list of target vertices is not ensured.
 <hr />
 
 
-### Datasets
+## Datasets
 
 The data sets used for evaluating the performance of ArcMatch are available at the following [repository](https://github.com/vbonnici/ArcMatch-datasets).
 
@@ -155,7 +155,7 @@ A further synthetic dataset, used for assessing the scalability of ArcMatch, is 
 <hr />
 
 
-### Citation
+## Citation
 Please, cite the ***ArcMatch*** paper 
  
      Bonnici, V., Giugno, R., Pulvirenti, A., Shasha, D., & Ferro, A. (2013).
