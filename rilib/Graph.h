@@ -30,58 +30,55 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef GRAPH_H_
 #define GRAPH_H_
 
+namespace rilib {
+class Graph {
+  public:
+    int id;
+    int nof_nodes;
 
-namespace rilib{
-class Graph{
-public:
-	int id;
-	int nof_nodes;
+    void **nodes_attrs;
 
-	void** nodes_attrs;
+    int *out_adj_sizes;
+    int *in_adj_sizes;
 
-	int* out_adj_sizes;
-	int* in_adj_sizes;
+    int **out_adj_list;
+    int **in_adj_list;
+    void ***out_adj_attrs;
 
-	int** out_adj_list;
-	int** in_adj_list;
-	void*** out_adj_attrs;
+    Graph() {
+        id = -1;
+        nof_nodes = 0;
+        nodes_attrs = NULL;
+        out_adj_sizes = NULL;
+        in_adj_sizes = NULL;
+        out_adj_list = NULL;
+        in_adj_list = NULL;
+        out_adj_attrs = NULL;
+    }
 
-	Graph(){
-		id = -1;
-		nof_nodes = 0;
-		nodes_attrs = NULL;
-		out_adj_sizes = NULL;
-		in_adj_sizes = NULL;
-		out_adj_list = NULL;
-		in_adj_list = NULL;
-		out_adj_attrs = NULL;
-	}
-
-
-	void print(){
-		std::cout<<"| ReferenceGraph["<<id<<"] nof nodes["<<nof_nodes<<"]\n";
-		for(int i=0; i<nof_nodes; i++){
-			std::cout<<"| node["<<i<<"]\n";
-			std::cout<<"| \tattribute_pointer["<<nodes_attrs[i]<<"]\n";
-			std::cout<<"| \tattribute["<<*((std::string*)(nodes_attrs[i]))<<"]\n";
-			std::cout<<"| \tout_adjs["<<out_adj_sizes[i]<<"][";
-			for(int j=0; j<out_adj_sizes[i]; j++){
-				std::cout<<out_adj_list[i][j];
-				if(j!=out_adj_sizes[i]-1)
-					std::cout<<", ";
-			}
-			std::cout<<"]\n";
-			std::cout<<"| \tin_adjs["<<in_adj_sizes[i]<<"][";
-			for(int j=0; j<in_adj_sizes[i]; j++){
-				std::cout<<in_adj_list[i][j];
-				if(j!=in_adj_sizes[i]-1)
-					std::cout<<", ";
-			}
-			std::cout<<"]\n";
-		}
-	}
+    void print() {
+        std::cout << "| ReferenceGraph[" << id << "] nof nodes[" << nof_nodes << "]\n";
+        for (int i = 0; i < nof_nodes; i++) {
+            std::cout << "| node[" << i << "]\n";
+            std::cout << "| \tattribute_pointer[" << nodes_attrs[i] << "]\n";
+            std::cout << "| \tattribute[" << *((std::string *)(nodes_attrs[i])) << "]\n";
+            std::cout << "| \tout_adjs[" << out_adj_sizes[i] << "][";
+            for (int j = 0; j < out_adj_sizes[i]; j++) {
+                std::cout << out_adj_list[i][j];
+                if (j != out_adj_sizes[i] - 1)
+                    std::cout << ", ";
+            }
+            std::cout << "]\n";
+            std::cout << "| \tin_adjs[" << in_adj_sizes[i] << "][";
+            for (int j = 0; j < in_adj_sizes[i]; j++) {
+                std::cout << in_adj_list[i][j];
+                if (j != in_adj_sizes[i] - 1)
+                    std::cout << ", ";
+            }
+            std::cout << "]\n";
+        }
+    }
 };
-}
-
+} // namespace rilib
 
 #endif /* REFERENCEGRAPH_H_ */

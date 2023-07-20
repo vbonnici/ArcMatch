@@ -32,54 +32,37 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "Solver.h"
 
-namespace rilib{
+namespace rilib {
 
-class InducedSubGISolver : public Solver{
-public:
+class InducedSubGISolver : public Solver {
+  public:
+    InducedSubGISolver(MatchingMachine &_mama, Graph &_rgraph, Graph &_qgraph, AttributeComparator &_nodeComparator, AttributeComparator &_edgeComparator, MatchListener &_matchListener, sbitset *_domains, int *_domains_size, EdgeDomains &_edomains) : Solver(_mama, _rgraph, _qgraph, _nodeComparator, _edgeComparator, _matchListener, _domains, _domains_size, _edomains) {}
 
-	 InducedSubGISolver(
-				MatchingMachine& _mama,
-				Graph& _rgraph,
-				Graph& _qgraph,
-				AttributeComparator& _nodeComparator,
-				AttributeComparator& _edgeComparator,
-				MatchListener& _matchListener,
-				sbitset *_domains,
-				int *_domains_size,
-				EdgeDomains& _edomains
-				) : Solver(_mama, _rgraph, _qgraph, _nodeComparator, _edgeComparator, _matchListener, _domains, _domains_size, _edomains){
+    virtual bool edgesCheck(int si, int ci, int *solution, bool *matched) {
 
-	}
+        int ii;
 
+        int count = 0;
+        for (ii = 0; ii < rgraph.out_adj_sizes[ci]; ii++) {
+            if (matched[rgraph.out_adj_list[ci][ii]]) {
+                count++;
+                if (count > mama.o_edges_sizes[si])
+                    return false;
+            }
+        }
+        count = 0;
+        for (ii = 0; ii < rgraph.in_adj_sizes[ci]; ii++) {
+            if (matched[rgraph.in_adj_list[ci][ii]]) {
+                count++;
+                if (count > mama.i_edges_sizes[si])
+                    return false;
+            }
+        }
 
-	virtual bool edgesCheck(int si, int ci, int* solution, bool* matched){
-		
-		int ii;
-
-		int count = 0;
-		for(ii=0; ii< rgraph.out_adj_sizes[ci]; ii++){
-			if(matched[rgraph.out_adj_list[ci][ii]]){
-				count++;
-				if(count > mama.o_edges_sizes[si])
-					return false;
-			}
-		}
-		count = 0;
-		for(ii=0; ii< rgraph.in_adj_sizes[ci]; ii++){
-			if(matched[rgraph.in_adj_list[ci][ii]]){
-				count++;
-				if(count > mama.i_edges_sizes[si])
-					return false;
-			}
-
-		}
-
-
-		return true;
-	}
+        return true;
+    }
 };
 
-}
-
+} // namespace rilib
 
 #endif /* INDSUBGISOLVER_H_ */

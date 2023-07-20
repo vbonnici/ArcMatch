@@ -34,32 +34,30 @@ typedef LARGE_INTEGER TIMEHANDLE;
 
 extern LARGE_INTEGER _freq;
 
-inline TIMEHANDLE start_time()
-{
+inline TIMEHANDLE start_time() {
     static int first = 1;
 
-    if(first) {
+    if (first) {
         if (!QueryPerformanceFrequency(&_freq))
-			cout << "No high-resolution performance counter installed" << endl;
+            cout << "No high-resolution performance counter installed" << endl;
 
-		if (_freq.QuadPart == 0)
-			cout << "High-resolution performance counter available but _freq = 0" << endl;
+        if (_freq.QuadPart == 0)
+            cout << "High-resolution performance counter available but _freq = 0" << endl;
         first = 0;
     }
     TIMEHANDLE tstart;
-	QueryPerformanceCounter(&tstart);
-	return tstart;
+    QueryPerformanceCounter(&tstart);
+    return tstart;
 }
-inline double end_time(TIMEHANDLE th)
-{
+inline double end_time(TIMEHANDLE th) {
     TIMEHANDLE tend;
     QueryPerformanceCounter(&tend);
 
-	double res = (double)(tend.QuadPart - th.QuadPart)/(_freq.QuadPart); 
-	return res;
+    double res = (double)(tend.QuadPart - th.QuadPart) / (_freq.QuadPart);
+    return res;
 }
 
-#pragma warning( disable : 4267 4018)
+#pragma warning(disable : 4267 4018)
 
 #else // sotto linux
 
@@ -68,30 +66,27 @@ inline double end_time(TIMEHANDLE th)
 typedef struct timeval TIMEHANDLE;
 
 extern struct timezone _tz;
-inline TIMEHANDLE start_time()
-{
+inline TIMEHANDLE start_time() {
     TIMEHANDLE tstart;
     gettimeofday(&tstart, &_tz);
     return tstart;
 }
-inline double end_time(TIMEHANDLE th)
-{
+inline double end_time(TIMEHANDLE th) {
     TIMEHANDLE tend;
     double t1, t2;
 
-	gettimeofday(&tend,&_tz);
+    gettimeofday(&tend, &_tz);
 
-    t1 =  (double)th.tv_sec + (double)th.tv_usec/(1000*1000);
-    t2 =  (double)tend.tv_sec + (double)tend.tv_usec/(1000*1000);
-    return t2-t1;
+    t1 = (double)th.tv_sec + (double)th.tv_usec / (1000 * 1000);
+    t2 = (double)tend.tv_sec + (double)tend.tv_usec / (1000 * 1000);
+    return t2 - t1;
 }
-#endif //WIN32
+#endif // WIN32
 
 #ifdef WIN32
 LARGE_INTEGER _freq;
 #else
 struct timezone _tz;
 #endif
-
 
 #endif

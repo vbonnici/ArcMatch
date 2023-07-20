@@ -5,15 +5,10 @@
 #ifndef GMSIZE_T_H_
 #define GMSIZE_T_H_
 
-#include <stdint.h>
 #include "limits.h"
+#include <stdint.h>
 
-
-
-typedef uint32_t 	u_size_t;
-typedef int32_t 	s_size_t;
-
-
-
+typedef uint32_t u_size_t;
+typedef int32_t s_size_t;
 
 #endif /* GMSIZE_T_H_ */

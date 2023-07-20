@@ -24,87 +24,87 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-
-#include <iostream>
-#include <fstream>
-#include <string>
 #include <cstdlib>
 #include <ctime>
+#include <fstream>
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string>
 
-
-
-class FileReader{
-    FILE * pFile;
+class FileReader {
+    FILE *pFile;
     long lSize;
-    char * buffer;
+    char *buffer;
 
     long pi;
 
-public:
-    FileReader (const char * filename){
+  public:
+    FileReader(const char *filename) {
         size_t result;
 
-        pFile = fopen ( filename , "rb" );
-        if (pFile==NULL) {fputs ("File error\n",stderr); exit (1);}
+        pFile = fopen(filename, "rb");
+        if (pFile == NULL) {
+            fputs("File error\n", stderr);
+            exit(1);
+        }
 
         // obtain file size:
-        fseek (pFile , 0 , SEEK_END);
-        lSize = ftell (pFile);
-        rewind (pFile);
+        fseek(pFile, 0, SEEK_END);
+        lSize = ftell(pFile);
+        rewind(pFile);
 
         // allocate memory to contain the whole file:
-        buffer = (char*) malloc (sizeof(char)*lSize);
-        if (buffer == NULL) {fputs ("Memory error\n",stderr); exit (2);}
+        buffer = (char *)malloc(sizeof(char) * lSize);
+        if (buffer == NULL) {
+            fputs("Memory error\n", stderr);
+            exit(2);
+        }
 
         // copy the file into the buffer:
-        result = fread (buffer,1,lSize,pFile);
-        if (result != lSize) {fputs ("Reading error\n",stderr); exit (3);}
+        result = fread(buffer, 1, lSize, pFile);
+        if (result != lSize) {
+            fputs("Reading error\n", stderr);
+            exit(3);
+        }
 
         /* the whole file is now loaded in the memory buffer. */
 
         pi = 0;
     }
 
-    bool
-    is_valid(){
-        return pi<lSize;
-    }
+    bool is_valid() { return pi < lSize; }
 
+    const char *next_string() {
 
-    const char *
-    next_string(){
-        
-        while((pi < lSize) && ((buffer[pi]==' ')||(buffer[pi]=='\n')||(buffer[pi]=='\t')||(buffer[pi]=='\r') )){
+        while ((pi < lSize) && ((buffer[pi] == ' ') || (buffer[pi] == '\n') || (buffer[pi] == '\t') || (buffer[pi] == '\r'))) {
             pi++;
         }
 
         long ci = pi;
-        
-        while((pi < lSize) && (buffer[pi]!=' ')&&(buffer[pi]!='\n')&&(buffer[pi]!='\t')&&(buffer[pi]!='\r') ){
+
+        while ((pi < lSize) && (buffer[pi] != ' ') && (buffer[pi] != '\n') && (buffer[pi] != '\t') && (buffer[pi] != '\r')) {
             pi++;
         }
 
-        if(pi < lSize){
+        if (pi < lSize) {
             buffer[pi] = '\0';
         }
         pi++;
 
-        return buffer+ci;
+        return buffer + ci;
     }
 
-    int
-    next_int(){
+    int next_int() {
 
-        while((pi < lSize) && ((buffer[pi]==' ')||(buffer[pi]=='\n')||(buffer[pi]=='\t')||(buffer[pi]=='\r') )){
+        while ((pi < lSize) && ((buffer[pi] == ' ') || (buffer[pi] == '\n') || (buffer[pi] == '\t') || (buffer[pi] == '\r'))) {
             pi++;
         }
 
         int ret = 0;
-        
-        while((pi < lSize) && (buffer[pi]!=' ')&&(buffer[pi]!='\n')&&(buffer[pi]!='\t')&&(buffer[pi]!='\r') ){
-            ret = (ret*10) + (buffer[pi]-'0');
+
+        while ((pi < lSize) && (buffer[pi] != ' ') && (buffer[pi] != '\n') && (buffer[pi] != '\t') && (buffer[pi] != '\r')) {
+            ret = (ret * 10) + (buffer[pi] - '0');
 
             pi++;
         }
@@ -112,11 +112,8 @@ public:
         return ret;
     }
 
-
-    void close(){
-        fclose (pFile);
-        free (buffer);
+    void close() {
+        fclose(pFile);
+        free(buffer);
     }
-
-
 };

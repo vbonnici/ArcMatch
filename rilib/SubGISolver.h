@@ -32,33 +32,15 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "Solver.h"
 
-namespace rilib{
+namespace rilib {
 
-class SubGISolver : public Solver{
-public:
+class SubGISolver : public Solver {
+  public:
+    SubGISolver(MatchingMachine &_mama, Graph &_rgraph, Graph &_qgraph, AttributeComparator &_nodeComparator, AttributeComparator &_edgeComparator, MatchListener &_matchListener, sbitset *_domains, int *_domains_size, EdgeDomains &_edomains) : Solver(_mama, _rgraph, _qgraph, _nodeComparator, _edgeComparator, _matchListener, _domains, _domains_size, _edomains) {}
 
-	SubGISolver(
-				MatchingMachine& _mama,
-				Graph& _rgraph,
-				Graph& _qgraph,
-				AttributeComparator& _nodeComparator,
-				AttributeComparator& _edgeComparator,
-				MatchListener& _matchListener,
-				sbitset *_domains,
-				int *_domains_size,
-				EdgeDomains& _edomains
-				) : Solver(_mama, _rgraph, _qgraph, _nodeComparator, _edgeComparator, _matchListener, _domains, _domains_size, _edomains){
-
-	}
-
-
-
-	virtual bool edgesCheck(int si, int ci, int* solution, bool* matched){
-		return true;
-	}
+    virtual bool edgesCheck(int si, int ci, int *solution, bool *matched) { return true; }
 };
 
-}
-
+} // namespace rilib
 
 #endif /* SUBGISOLVER_H_ */
