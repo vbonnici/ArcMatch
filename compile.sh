@@ -86,8 +86,8 @@ cp arcmatch-13 arcmatch-lt
 
 additional="-DPRINT_MATCHES"
 
-g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t7 $additional  -o arcmatch-matches
-g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t13 $additional -o arcmatch-lt-matches
+g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t7 $additional  -o arcmatch-print
+g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t13 $additional -o arcmatch-lt-print
 
 
 additional="-DFIRST_100k_MATCHES"
