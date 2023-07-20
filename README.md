@@ -145,9 +145,12 @@ The order within the list of target vertices is not ensured.
 
 
 ### Datasets
-A biochemical dataset originally used to evaluate the performance of RI and RI-DS, and then used for ***ArcMatch*** is available at this [repository](https://github.com/GiugnoLab/RI-Datasets).
 
-A further synthetic dataset is available at the following [repository](https://github.com/GiugnoLab/RI-synthds).
+The data sets used for evaluating the performance of ArcMatch are available at the following [repository](https://github.com/vbonnici/ArcMatch-datasets).
+
+Among these, a PPI data set that was built on top of a biochemical data set originally used to evaluate the performance of RI and RI-DS, which is is available at this [repository](https://github.com/GiugnoLab/RI-Datasets).
+
+A further synthetic dataset, used for assessing the scalability of ArcMatch, is available at the following [repository](https://github.com/GiugnoLab/RI-synthds).
 
 <hr />
 
