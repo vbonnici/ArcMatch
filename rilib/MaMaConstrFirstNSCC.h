@@ -3,7 +3,7 @@
  *
  */
 /*
-Copyright (c) 2022
+Copyright (c) 2023
 
 This library contains portions of other open source products covered by separate
 licenses. Please see the corresponding source files for specific terms.
@@ -70,32 +70,24 @@ public:
 		int si = 0;
 		for(int i=0; i<nof_sn; i++){
 			if(domains_size[i] == 1){
-//#ifdef MDEBUG
 				std::cout<<"ssi["<<si<<"] = "<<i<<"\n";
-//#endif
 				push_node_to_core(i, si, node_flags, ssg, map_state_to_node, map_node_to_state);
 				si++;
 			}
 		}
 
-//#ifdef MDEBUG
 		for(int i=0; i<nof_sn; i++){
 			std::cout<<i<<"["<<node_flags[i]<<"] ";
 		}
 		std::cout<<"\n";
-//#endif
 
 		for( ; si<nof_sn; si++){
-
-//#ifdef MDEBUG
 			std::cout<<"SI["<<si<<"]\n";
-//#endif
 			int best_nid = -1;
 			int best_nid_score[] = {0,0,0,0,0};
 			int current_nid_score[] = {0,0,0,0,0};
 
 
-//#ifdef MDEBUG
 			for(int nid=0; nid<nof_sn; nid++){
 				std::cout<<nid<<"("<<node_flags[nid]<<") ";
 				get_scores(nid, current_nid_score, node_flags, ssg);
@@ -105,7 +97,6 @@ public:
 				}
 				std::cout<<"]\n";
 			}
-//#endif
 
 			for(int nid=0; nid<nof_sn; nid++){
 				if( node_flags[nid] == NS_CNEIGH ){
@@ -144,9 +135,8 @@ public:
 					}
 				}
 			}
-//#ifdef MDEBUG
 			std::cout<<"si["<<si<<"] = "<<best_nid<<"\n";
-//#endif
+
 			std::set<int> cascade;
 			if(best_nid_score[0] > 0){
 				for(int i=0; i<nof_sn; i++){
@@ -160,13 +150,11 @@ public:
 
 			push_node_to_core(best_nid, si, node_flags, ssg, map_state_to_node, map_node_to_state);
 
-//#ifdef MDEBUG
 			std::cout<<"core compatible: ";
 			for(auto &i : cascade){
 				std::cout<<i<<" ";
 			}
 			std::cout<<"\n";
-//#endif
 			int osi = si;
 			for(auto &i : cascade){
 				si++;
@@ -175,12 +163,12 @@ public:
 			}
 			
 
-//#ifdef MDEBUG
+
 			for(int i=0; i<nof_sn; i++){
 				std::cout<<i<<"["<<node_flags[i]<<"] ";
 			}
 			std::cout<<"\n";
-//#endif
+
 		}
 
 
@@ -293,7 +281,6 @@ private:
 		scores[2] = unvs.size();
 		scores[3] = all.size();
 		scores[4] = domains_size[nid];
-		//scores[4] = qg.out_adj_sizes[nid] + qg.in_adj_sizes[nid];
 	}
 
 
@@ -306,35 +293,9 @@ private:
 		if(s1[4] != s2[4]){
 			return s2[4]- s1[4];
 		}
-		/*
-		if(s1[3] != s2[3]){
-			return s2[3]- s1[3];
-		}
-		if(s1[4] != s2[4]){
-			return s1[4]- s2[4];
-		}*/
+
 		return n2-n1;
 	}
-
-
-	/*std::vector<int> get_cores(int nid, NodeFlag* node_flags, Graph &qg){
-		std::vector<int> cores;
-
-		for(int i=0; i<qg.out_adj_sizes[nid]; i++){
-			if(node_flags[ qg.out_adj_list[nid][i] ] == NS_CORE){
-				cores.push_back(qg.out_adj_list[nid][i]);
-			}
-		}
-		for(int i=0; i<qg.in_adj_sizes[nid]; i++){
-			if(node_flags[ qg.in_adj_list[nid][i] ] == NS_CORE){
-				cores.push_back(qg.in_adj_list[nid][i]);
-			}
-		}
-
-		std::sort(cores.begin(), cores.end());
-
-		return cores;
-	}*/
 
 
 	bool are_core_compatible( int nid1, int nid2, NodeFlag* node_flags, Graph &qg ){

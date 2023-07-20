@@ -3,7 +3,7 @@
  *
  */
 /*
-Copyright (c) 2022
+Copyright (c) 2023
 
 This library contains portions of other open source products covered by separate
 licenses. Please see the corresponding source files for specific terms.
@@ -159,10 +159,6 @@ public:
 #ifdef MAMACONSTRFIRSTNODESETSLEAFS_H_MDEBUG
 				std::cout<<"nof leafs = "<<nof_leafs<<" \n";
 #endif	
-		//nof_leafs = nof_sn - leafi + 1;
-
-
-
 
 #ifdef MAMACONSTRFIRSTNODESETSLEAFS_H_MDEBUG
 		for(int i=0; i<nof_sn; i++){
@@ -334,10 +330,6 @@ private:
 	}
 
 	void get_scores(int nid, int *scores,  NodeFlag* node_flags, Graph &qg){
-		//for(int i=0; i<4; i++){
-		//	scores[i] = 0;
-		//}
-
 		std::set<int> all;
 
 		std::set<int> cores;
@@ -346,30 +338,24 @@ private:
 
 		for(int i=0; i<qg.out_adj_sizes[nid]; i++){
 			if(node_flags[ qg.out_adj_list[nid][i] ] == NS_CORE){
-				//scores[0]++;
 				cores.insert(qg.out_adj_list[nid][i]);
 			}
 			else if(node_flags[ qg.out_adj_list[nid][i] ] == NS_CNEIGH){
-				//scores[1]++;
 				neighs.insert(qg.out_adj_list[nid][i]);
 			}
 			else{
-				//scores[2]++;
 				unvs.insert(qg.out_adj_list[nid][i]);
 			}
 			all.insert(qg.out_adj_list[nid][i]);
 		}
 		for(int i=0; i<qg.in_adj_sizes[nid]; i++){
 			if(node_flags[ qg.in_adj_list[nid][i] ] == NS_CORE){
-				//scores[0]++;
 				cores.insert(qg.in_adj_list[nid][i]);
 			}
 			else if(node_flags[ qg.in_adj_list[nid][i] ] == NS_CNEIGH){
-				//scores[1]++;
 				neighs.insert(qg.in_adj_list[nid][i]);
 			}
 			else{
-				//scores[2]++;
 				unvs.insert(qg.in_adj_list[nid][i]);
 			}
 			all.insert(qg.in_adj_list[nid][i]);
@@ -380,7 +366,6 @@ private:
 		scores[2] = unvs.size();
 		scores[3] = all.size();
 		scores[4] = domains_size[nid];
-		//scores[4] = qg.out_adj_sizes[nid] + qg.in_adj_sizes[nid];
 	}
 
 
@@ -397,13 +382,6 @@ private:
 #endif
 			return s2[4]- s1[4];
 		}
-		/*
-		if(s1[3] != s2[3]){
-			return s2[3]- s1[3];
-		}
-		if(s1[4] != s2[4]){
-			return s1[4]- s2[4];
-		}*/
 		return n2-n1;
 	}
 };

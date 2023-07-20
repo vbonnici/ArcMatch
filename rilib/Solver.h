@@ -3,7 +3,7 @@
  *
  */
 /*
-Copyright (c) 2022
+Copyright (c) 2023
 
 This library contains portions of other open source products covered by separate
 licenses. Please see the corresponding source files for specific terms.
@@ -145,14 +145,6 @@ public:
 		int sip1;
 		while(si != -1){
 
-			//std::cout<<"si "<<si<<" \n";
-			/*std::cout<<"si("<<si<<") ["<<map_state_to_node[si]<<"] r["<<map_node_to_state[map_state_to_node[si]]<<"] "<< 
-						domains_size[ map_state_to_node[si] ] 
-						<< " "<< candidatesSize[si]
-						<<"\n";
-						*/
-			//steps++;
-
 			if(psi >= si){
 				matched[solution[si]] = false;
 			}
@@ -160,7 +152,6 @@ public:
 			ci = -1;
 			candidatesIT[si]++;
 			while(candidatesIT[si] < candidatesSize[si]){
-				//triedcouples++;
 
 				ci = candidates[si][candidatesIT[si]];
 				solution[si] = ci;
@@ -175,9 +166,7 @@ public:
 	}
 #endif
 
-				//std::cout<<"ci "<<ci<<"\n";
 				if(	(!matched[ci])
-				    //  && nodeCheck(si,ci, map_state_to_node)
 						&& domains[map_state_to_node[si]].get(ci)
 				      && edgesCheck(si, ci, solution, matched)
 				            ){
@@ -241,8 +230,6 @@ public:
 		int ii;
 
 		int nof_sn 						= mama.nof_sn;
-		//int* edges_sizes 				= mama.edges_sizes;				//indexed by state_id
-		//MaMaEdge** edges 				= mama.edges;					//indexed by state_id
 		int* map_node_to_state 			= mama.map_node_to_state;			//indexed by node_id
 		int* map_state_to_node 			= mama.map_state_to_node;			//indexed by state_id
 		int* parent_state 				= mama.parent_state;			//indexed by state_id
@@ -267,7 +254,6 @@ public:
 std::cout<<"-----\n";
 #endif
 			if(parent_type[i] == PARENTTYPE_NULL){
-				//std::cout<<"parent type null "<<i<<"\n";
 				int n = map_state_to_node[i];
 				candidates[i] = new int[domains_size[n]];
 				candidates_parents[i]  = new int[domains_size[n]];
@@ -526,12 +512,6 @@ std::cout<<"IN eid: "<<eid<<";k "<<k<<": "<<eit->first<<"-"<<eit->second<<"\n";
 
 
 		int *candidateIT = new int[nof_sn];
-
-		/*int *candidateITeid = new int[edomains.nof_pattern_edges];
-		int *candidateITpnode = new int[edomains.nof_pattern_edges];
-		int *candidateITpstate = new int[edomains.nof_pattern_edges];
-		int *candidateITsize = new int[edomains.nof_pattern_edges];*/
-
 		int *candidateITeid = new int[nof_sn];
 		int *candidateITpnode = new int[nof_sn];
 		int *candidateITpstate = new int[nof_sn];
@@ -577,13 +557,7 @@ std::cout<<"SI "<<si<<" - PATTERN "<<map_state_to_node[si]<<"\n";
 				else if(mama.edges_sizes[si] == 1){
 					int pstate;
 					eid = mama.edges[si][0].id;
-					// if(mama.edges[si][0].source == si){
-					// 	pnode = map_state_to_node[mama.edges[si][0].target];
-					// }
-					// else{
-					// 	pnode = map_state_to_node[mama.edges[si][0].source];
-					// }
-					// pnode = solution[ map_node_to_state[pnode]];
+
 					if(mama.edges[si][0].source == si){
 						pnode = solution[mama.edges[si][0].target];
 						pstate = mama.edges[si][0].target;
@@ -606,19 +580,13 @@ std::cout<<"single parent: eid "<<candidateITeid[si]<<"; pnode "<<pnode<<"; psta
 					int pstate;
 					for(int j=0; j<mama.edges_sizes[si]; j++){
 						eid = mama.edges[si][j].id;
-						// if(mama.edges[si][j].source == si){
-						// 	pnode = map_state_to_node[mama.edges[si][j].target];
-						// }
-						// else{
-						// 	pnode = map_state_to_node[mama.edges[si][j].source];
-						// }
+
 						if(mama.edges[si][j].source == si){
 							pnode = solution[mama.edges[si][j].target];
 						}
 						else{
 							pnode = solution[mama.edges[si][j].source];
 						}
-						//pnode = solution[ map_node_to_state[pnode]];
 
 						if((maxp==-1) || (ce_counter[std::make_pair(pnode,eid)] > maxpcount)){
 							maxp = pnode;
@@ -682,20 +650,18 @@ std::cout<<"pCI "<<candidateIT[si]
 						if( !matched[ ordered_edge_domains[candidateITeid[si]][  candidateIT[si] + candidateITsize[si] ] ] ){
 							ci = ordered_edge_domains[candidateITeid[si]][  candidateIT[si] + candidateITsize[si] ];
 							solution[si] = ci;
-
-							//std::cout<<"CANDIDATE SI "<<si<<" CI "<<ci<<"\n";
 							
 							if(mama.edges_sizes[si] > 1){
 
 								bool checked = true;
 								for(int me=0; me<mama.edges_sizes[si]; me++){
-									//if((candidateITpstate[si]!=mama.edges[si][me].source) && (candidateITpstate[si]!=mama.edges[si][me].target)){
+									
 										if(  edomains.domains[ mama.edges[si][me].id ].count( 
 											std::pair<int,int>(solution[mama.edges[si][me].source],solution[mama.edges[si][me].target]) ) ==0 ){
 												checked = false;
 												break;
 										}
-									//}
+						
 								}
 								if(checked) checked &= edgesCheck(si, ci, solution, matched);
 
@@ -709,17 +675,6 @@ std::cout<<"pCI "<<candidateIT[si]
 								break;
 							}
 							
-							/*
-							if(edgesCheck(si, ci, solution, matched)){
-								break;
-							}
-							else{
-#ifdef MDEBUG
-std::cout<<"no edge check\n";
-#endif
-								ci = -1;
-							}
-							*/	
 						}
 #ifdef MDEBUG
 						else{
@@ -758,9 +713,6 @@ std::cout<<"CI "<<ci<<"\n";
 				matchedcouples++;
 
 				if(si == nof_sn -1){
-					//std::cout<<matchListener.matchcount<<"\n";
-					
-					//matchListener.match(nof_sn, map_state_to_node, solution);
 #ifdef PRINT_MATCHES
 					matchListener.match(nof_sn, map_state_to_node, solution);
 #endif
@@ -779,7 +731,6 @@ std::cout<<"CI "<<ci<<"\n";
 				else{
 					matched[solution[si]] = true;
 					sip1 = si+1;
-					//candidatesIT[si +1] = -1;
 					psi = si;
 					si++;
 				}
@@ -925,8 +876,6 @@ std::cout<<"SI "<<si<<" - PATTERN "<<map_state_to_node[si]<<"\n";
 
 
 			if(si == nof_sn - mama.nof_leafs){
-
-				//std::cout<<"to leaf.................\n";
 				//we have leafs
 
 				std::set<int>  *leaf_domains = new std::set<int>[ mama.nof_leafs];
@@ -956,7 +905,6 @@ std::cout<<"SI "<<si<<" - PATTERN "<<map_state_to_node[si]<<"\n";
 						if(  ordered_edge_domains[candidateITeid[si+l]][ candidateIT[si+l] ] ==  candidateITpnode[si+l]){
 							if( !matched[ ordered_edge_domains[candidateITeid[si+l]][  candidateIT[si+l] + candidateITsize[si+l] ] ] ){
 								ci = ordered_edge_domains[candidateITeid[si+l]][  candidateIT[si+l] + candidateITsize[si+l] ];
-								//solution[si] = ci;
 								leaf_domains[l].insert(ci);
 							}
 						}
@@ -989,7 +937,6 @@ std::cout<<"SI "<<si<<" - PATTERN "<<map_state_to_node[si]<<"\n";
 #ifdef FIRST_100k_MATCHES
 					if(matchcount >= 100000)si = -1;
 #endif
-				//if(matchcount >= 100000)si = -1;
 			}
 			else{
 
@@ -1101,8 +1048,6 @@ std::cout<<"SI "<<si<<" - PATTERN "<<map_state_to_node[si]<<"\n";
 							if( !matched[ ordered_edge_domains[candidateITeid[si]][  candidateIT[si] + candidateITsize[si] ] ] ){
 								ci = ordered_edge_domains[candidateITeid[si]][  candidateIT[si] + candidateITsize[si] ];
 								solution[si] = ci;
-
-								//std::cout<<"CANDIDATE SI "<<si<<" CI "<<ci<<"\n";
 								
 								if(mama.edges_sizes[si] > 1){
 
@@ -1174,19 +1119,16 @@ std::cout<<"SI "<<si<<" - PATTERN "<<map_state_to_node[si]<<"\n";
 
 #ifdef FIRST_MATCH_ONLY
 							si = -1;
-		//					return IF U WANT JUST AN INSTANCE
 #endif
 #ifdef FIRST_100k_MATCHES
 					if(matchcount >= 100000)si = -1;
 #endif
-							//if(matchcount >= 100000)si = -1;
 
 
 					}
 					else{
 						matched[solution[si]] = true;
 						sip1 = si+1;
-						//candidatesIT[si +1] = -1;
 						psi = si;
 						si++;
 					}
@@ -1210,12 +1152,7 @@ std::cout<<"SI "<<si<<" - PATTERN "<<map_state_to_node[si]<<"\n";
 
 	};
 
-
-
-//	virtual bool nodeCheck(int si, int ci, int* map_state_to_node)=0;
 	virtual bool edgesCheck(int si, int ci, int* solution, bool* matched)=0;
-
-
 };
 
 }

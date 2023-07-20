@@ -3,7 +3,7 @@
  *
  */
 /*
-Copyright (c) 2022
+Copyright (c) 2023
 
 This library contains portions of other open source products covered by separate
 licenses. Please see the corresponding source files for specific terms.
@@ -135,17 +135,11 @@ int read_graph(const char* filename, Graph* g, enum GRAPH_FILE_TYPE type){
 
 
 
-
-
-
-
 struct gr_neighs_t{
 public:
 	int nid;
 	gr_neighs_t *next;
 };
-
-
 
 
 
@@ -267,8 +261,6 @@ int read_gfu(const char* fileName, FILE* fd, Graph* graph){
 	time_s = start_time();
 
 
-//	graph->sort_edges();
-
 	for(int i=0; i<graph->nof_nodes; i++){
 		if(ns_o[i] != NULL){
 			gr_neighs_t *p = NULL;
@@ -295,10 +287,6 @@ int read_gfu(const char* fileName, FILE* fd, Graph* graph){
 			if(p!=NULL)
 			free(p);
 		}
-
-
-//			free(ns_o);
-//			free(ns_i);
 	}
 
 	time_e = end_time(time_s);
@@ -391,8 +379,6 @@ int read_gfd(const char* fileName, FILE* fd, Graph* graph){
 			n = n->next;
 		}
 	}
-
-//	graph->sort_edges();
 
 	return 0;
 };

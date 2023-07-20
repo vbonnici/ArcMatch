@@ -3,7 +3,7 @@
  *
  */
 /*
-Copyright (c) 2022
+Copyright (c) 2023
 
 This library contains portions of other open source products covered by separate
 licenses. Please see the corresponding source files for specific terms.
@@ -125,8 +125,6 @@ public:
 				source = map_state_to_node[edges[si][ei].source];
 				target = map_state_to_node[edges[si][ei].target];
 
-				//std::cout<<"@ "<<source<<" "<<target<<"\n";
-
 				eid = 0;
 				for(int i=0; i<source; i++){
 					eid += query.out_adj_sizes[i];
@@ -134,7 +132,6 @@ public:
 				for(int i=0; i<query.out_adj_sizes[source]; i++){
 					if(query.out_adj_list[source][i] == target){
 						edges[si][ei].id = eid;
-						//std::cout<<"@@@ "<<eid<<"\n";
 						break;
 					}
 					eid++;

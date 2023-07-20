@@ -2,7 +2,7 @@
  * Domains.h
  */
 /*
-Copyright (c) 2022
+Copyright (c) 2023
 
 This library contains portions of other open source products covered by separate
 licenses. Please see the corresponding source files for specific terms.
@@ -205,7 +205,6 @@ bool init_edomains(
 	edomains.nof_target_edges = nof_tedges;
 
 	edomains.pattern_out_adj_eids = new int*[pattern.nof_nodes]; 
-	//edomains.target_out_adj_eids = new int*[target.nof_nodes]; 
 
 	edomains.inv_pattern_edge_ids = new int[nof_pedges * 2];
 
@@ -242,19 +241,14 @@ bool init_edomains(
 
 	n = 0;
 	for(int i=0; i<target.nof_nodes; i++){
-		//edomains.target_out_adj_eids[i] = new int[target.out_adj_sizes[i]];
 		for(int j=0; j<target.out_adj_sizes[i]; j++){
 			edomains.inv_target_edge_ids[n*2] = i;
 			edomains.inv_target_edge_ids[(n*2)+1] = j;
-			//edomains.target_out_adj_eids[i][j] = n;
 			n++;
 		}
 	}
 
-	//edomains.domains = new sbitset[nof_pedges];
 	edomains.domains = new unordered_edge_set[nof_pedges];
-
-	//std::cout<<"nof edges: "<<nof_pedges<<"\t"<<nof_tedges<<"\n";
 
 	/*given a pattern edge, we search for compatible target edges.
 	Given a pattern node p_s and a negihborn of it p_t, we look at the aleady computed domain of it.
@@ -287,18 +281,8 @@ bool init_edomains(
 								target.out_adj_attrs[ts][ts_n])
 								){
 
-
-								//std::cout<<edomains.pattern_out_adj_eids[ps][ps_n]<<"\t"<<edomains.target_out_adj_eids[ts][ts_n]<<"\n";
-								
-								//std::cout<<edomains.pattern_out_adj_eids[ps][ps_n]<<"("<<ps<<","<<pt<<")"<<*((std::string*)pattern.out_adj_attrs[ps][ps_n])
-								//	<<"] -> ("<<ts<<","<<tt<<")"<<*((std::string*)target.out_adj_attrs[ts][ts_n])<<"]"<<"\n";
-
-
-
 								edomains.domains[  edomains.pattern_out_adj_eids[ps][ps_n]  ]
 								.insert(  std::pair<int,int>(ts,tt) );
-								//.set( edomains.target_out_adj_eids[ts][ts_n] , true);
-								//.insert(  std::pair<int,int>(ts,tt) );
 							}
 						}
 					}
@@ -324,9 +308,7 @@ public:
 	{};
 
 
-	bool refine_domains(int altered_q_node){
-		//std::cout<<"refine on altered node "<<altered_q_node<<"\n";
-			
+	bool refine_domains(int altered_q_node){			
 		bool erased = false;
 
 		int n;
@@ -479,7 +461,6 @@ public:
 				unordered_edge_set eset = 
 				edge_domains.domains[  edge_domains.pattern_out_adj_eids[q_dfs[c_level]][q_dfs_adji[c_level+1]]  ];
 				for(unordered_edge_set::iterator eit = eset.begin(); eit != eset.end(); eit++){
-					//std::cout<<"("<<eit->first<<","<<eit->second<<")\n";
 					if( (eit->first == c_dfs[c_level]) && (!c_visited[eit->second])){
 						return true;
 					}
@@ -492,7 +473,6 @@ public:
 			unordered_edge_set eset = 
 			edge_domains.domains[  edge_domains.pattern_out_adj_eids[q_dfs[c_level]][q_dfs_adji[c_level+1]]  ];
 			for(unordered_edge_set::iterator eit = eset.begin(); eit != eset.end(); eit++){
-				//std::cout<<"("<<eit->first<<","<<eit->second<<")\n";
 				if( (eit->first == c_dfs[c_level]) && (!c_visited[eit->second])){
 					c_dfs[c_level+1] = eit->second;
 					c_visited[eit->second] = true;
@@ -511,7 +491,6 @@ public:
 
 	void verify_path(int* q_dfs, int* q_dfs_adji, int q_level, bool circle){
 		if(q_level > 1){
-			//std::cout<<":>verify_path\n";
 			int* c_dfs = new int[query.nof_nodes];
 			bool* c_visited = new bool[nof_target_nodes];
 			for(int i=0; i<nof_target_nodes; i++){
@@ -529,7 +508,6 @@ public:
 				c_visited[cnode] = true;
 
 				if(! verify_path_dfs(q_dfs, q_dfs_adji, q_level, c_dfs, c_visited, 0, circle) ){
-					//std::cout<<"cadidate "<<cnode<<" of "<<q_dfs[0]<<" is going to be removed\n";
 					node_domains[q_dfs[0]].set(cnode, false);
 					removed = true;
 				}
@@ -537,7 +515,6 @@ public:
 				c_visited[cnode] = false;
 			}
 			if(removed){
-				//std::cout<<"updating node domains after removal ...\n";
 				refine_domains(q_dfs[0]);
 			}
 
@@ -552,19 +529,13 @@ public:
 	because only out edges are visited during the DFS visit.
 	*/
 	void reduce_by_paths_dfs(int* dfs, int* dfs_adji, bool* visited, int level, int max_lp){
-		//std::cout<<">dfs("<<level<<","<<dfs[level]<<")\n";
 		int n;
 		int nof_p = 0;
 		for(int ni=0; ni < query.out_adj_sizes[dfs[level]]; ni++ ){
 			n = query.out_adj_list[ dfs[level] ][ni];
-			//std::cout<<"neigh "<<n<<"\n";
+
 			if( (!visited[n]) ){
 				if(level == query.nof_nodes-2){
-					/*std::cout<<"max path: ";
-					for(int i=0; i<level+1; i++){
-						std::cout<<dfs[i]<<" ";
-					}
-					std::cout<<n<<"\n";*/
 					nof_p++;
 
 					dfs[level+1] = n;
@@ -587,12 +558,6 @@ public:
 				}
 			}
 			else if ((level>0) && (n!=dfs[level-1]) && (n==dfs[0])){
-				/*std::cout<<"circle: ";
-				for(int i=0; i<level+1; i++){
-					std::cout<<dfs[i]<<" ";
-				}
-				std::cout<<n<<"\n";*/
-
 				nof_p++;
 				dfs[level+1] = n;
 				dfs_adji[level+1] = ni;
@@ -600,16 +565,10 @@ public:
 				verify_path(dfs, dfs_adji, level+1, true);
 			}
 		}
-		if( (level>0) && (nof_p == 0)){
-			/*std::cout<<"path: ";
-			for(int i=0; i<level+1; i++){
-				std::cout<<dfs[i]<<" ";
-			}
-			std::cout<<"\n";*/
-			
+		if( (level>0) && (nof_p == 0)){			
 			verify_path(dfs, dfs_adji, level-1, false);
 		}
-		//std::cout<<"<<dfs\n";
+
 	};
 
 	void reduce_by_paths(int starting_node, int max_lp){
@@ -631,13 +590,9 @@ public:
 	};
 
 	void reduce_by_paths(int max_lp){
-		//std::cout<<"reducing by paths...\n";
 		for(int i=0; i<query.nof_nodes; i++){
-			//std::cout<<"reducing by paths "<<i<<"\n";
 			reduce_by_paths(i, max_lp);
-
 		}
-		//std::cout<<"<<reducing by paths\n";
 	};
 
 
@@ -702,8 +657,6 @@ public:
 void print_domains(Graph& query, Graph& target, sbitset* node_domains,	EdgeDomains& edge_domains){
 	std::cout<<"nof query nodes "<< query.nof_nodes<<"\n";
 	for(int i=0; i<query.nof_nodes; i++){
-		//std::cout<<"node domain "<<i<<":"<<node_domains[i].count_ones()<<"\n";
-		//std::cout<<"node domain "<<i<<": ";
 		std::cout<<"node domain "<<i<<":"<<node_domains[i].count_ones()<<": ";
 		for(sbitset::iterator it = node_domains[i].first_ones(); it!=node_domains[i].end(); it.next_ones()){
 			std:cout<<it.first<<" ";
@@ -723,8 +676,6 @@ void print_domains(Graph& query, Graph& target, sbitset* node_domains,	EdgeDomai
 void print_domains_extended(Graph& query, Graph& target, sbitset* node_domains,	EdgeDomains& edge_domains){
 	std::cout<<"nof query nodes "<< query.nof_nodes<<"\n";
 	for(int i=0; i<query.nof_nodes; i++){
-		//std::cout<<"node domain "<<i<<":"<<node_domains[i].count_ones()<<"\n";
-		//std::cout<<"node domain "<<i<<": ";
 		std::cout<<"node domain "<<i<<":"<<node_domains[i].count_ones()<<": ";
 		for(sbitset::iterator it = node_domains[i].first_ones(); it!=node_domains[i].end(); it.next_ones()){
 			std:cout<<it.first<<" ";

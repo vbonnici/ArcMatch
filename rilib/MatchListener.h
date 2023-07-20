@@ -3,7 +3,7 @@
  *
  */
 /*
-Copyright (c) 2022
+Copyright (c) 2023
 
 This library contains portions of other open source products covered by separate
 licenses. Please see the corresponding source files for specific terms.
@@ -56,7 +56,7 @@ public:
 	};
 
 	virtual void match_multiple(int n, int* qIDs, int* rIDs, int si, std::set<int>  *leaf_domains){
-		//TODO
+		// TODO
 	};
 };
 
@@ -79,7 +79,7 @@ public:
 			std::cout<< "("<< qIDs[i] <<","<< rIDs[i] <<")";
 		}
 		for(int i=si; i<n; i++){
-			std::cout<< "("<< qIDs[i] <<",[";//<< leaf_domains[i-si].size() 
+			std::cout<< "("<< qIDs[i] <<",["; 
 			int nof = leaf_domains[i-si].size();
 			int ci = 0;
 			for ( auto it = leaf_domains[i-si].begin(); it != leaf_domains[i-si].end(); it++ ){

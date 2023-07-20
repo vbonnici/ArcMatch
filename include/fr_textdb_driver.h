@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2022
+Copyright (c) 2023
 
 This library contains portions of other open source products covered by separate
 licenses. Please see the corresponding source files for specific terms.
@@ -51,7 +51,6 @@ enum GRAPH_FILE_TYPE {GFT_GFU, GFT_GFD, GFT_EGFU, GFT_EGFD, GFT_LAD};
 
 int read_gfu(const char* fileName, FileReader* fd, Graph* graph);
 int read_gfd(const char* fileName, FileReader* fd, Graph* graph);
-//int read_lad(const char* fileName, FileReader* fd, Graph* graph);
 int read_egfu(const char* fileName, FileReader* fd, Graph* graph);
 int read_egfd(const char* fileName, FileReader* fd, Graph* graph);
 
@@ -77,9 +76,6 @@ int read_dbgraph(const char* filename, FileReader* fd, Graph* g, enum GRAPH_FILE
 	case GFT_EGFD:
 		ret = read_egfd(filename, fd, g);
 		break;
-	//case GFT_LAD:
-		//ret = read_lad(filename, fd, g);
-	//	break;
 	}
 
 	return ret;
@@ -105,9 +101,6 @@ int read_graph(const char* filename, Graph* g, enum GRAPH_FILE_TYPE type){
 	case GFT_EGFD:
 		ret = read_egfd(filename, fd, g);
 		break;
-	//case GFT_LAD:
-		//ret = read_lad(filename, fd, g);
-	//	break;
 	}
 
 	fd->close();
@@ -137,23 +130,14 @@ int read_gfu(const char* fileName, FileReader* fd, Graph* graph){
 	int i,j;
 
     fd->next_string();
-	// if (!fd->is_valid()){	//#graphname
-	// 	return -1;
-	// }
 
     graph->nof_nodes = fd->next_int();
-	// if(!fd->is_valid()){//nof nodes
-	// 	return -1;
-	// }
 
 	//node labels
 	graph->nodes_attrs = (void**)malloc(graph->nof_nodes * sizeof(void*));
 	const char *label;
 	for(i=0; i<graph->nof_nodes; i++){
         label = fd->next_string();
-		// if(!fd->is_valid()){
-		// 	return -1;
-		// }
 		graph->nodes_attrs[i] = new std::string(label);
 	}
 
@@ -168,20 +152,11 @@ int read_gfu(const char* fileName, FileReader* fd, Graph* graph){
 		ns_i[i] = NULL;
 	}
 	int temp = fd->next_int();
-	// if (fscanf(fd,"%d",&temp) != 1){//number of edges
-	// 	return -1;
-	// }
 
 	int es = 0, et = 0;
 	for(i=0; i<temp; i++){
         es = fd->next_int();
         et = fd->next_int();
-		// if (fscanf(fd,"%d",&es) != 1){//source node
-		// 	return -1;
-		// }
-		// if (fscanf(fd,"%d",&et) != 1){//target node
-		// 	return -1;
-		// }
 
 		graph->out_adj_sizes[es]++;
 		graph->in_adj_sizes[et]++;
@@ -250,9 +225,6 @@ int read_gfu(const char* fileName, FileReader* fd, Graph* graph){
 	std::cout<<":rtime: data structures "<<time_e<<"\n";
 	time_s = start_time();
 
-
-//	graph->sort_edges();
-
 	for(int i=0; i<graph->nof_nodes; i++){
 		if(ns_o[i] != NULL){
 			gr_neighs_t *p = NULL;
@@ -279,10 +251,6 @@ int read_gfu(const char* fileName, FileReader* fd, Graph* graph){
 			if(p!=NULL)
 			free(p);
 		}
-
-
-//			free(ns_o);
-//			free(ns_i);
 	}
 
 	time_e = end_time(time_s);
@@ -299,21 +267,14 @@ int read_gfd(const char* fileName, FileReader* fd, Graph* graph){
 	int i,j;
 
     fd->next_string();
-	// if (fscanf(fd,"%s",str) != 1){	//#graphname
-	// 	return -1;
-	// }
+
     graph->nof_nodes = fd->next_int();
-	// if (fscanf(fd,"%d",&(graph->nof_nodes)) != 1){//nof nodes
-	// 	return -1;
-	// }
+
 	//node labels
 	graph->nodes_attrs = (void**)malloc(graph->nof_nodes * sizeof(void*));
-	const char *label;// = new char[STR_READ_LENGTH];
+	const char *label;
 	for(i=0; i<graph->nof_nodes; i++){
         label = fd->next_string();
-		// if (fscanf(fd,"%s",label) != 1){
-		// 	return -1;
-		// }
 		graph->nodes_attrs[i] = new std::string(label);
 	}
 
@@ -328,19 +289,12 @@ int read_gfd(const char* fileName, FileReader* fd, Graph* graph){
 		ns_i[i] = NULL;
 	}
 	int temp = fd->next_int();;
-	// if (fscanf(fd,"%d",&temp) != 1){//number of edges
-	// 	return -1;
-	// }
+	
 	int es = 0, et = 0;
 	for(i=0; i<temp; i++){
         es = fd->next_int();
         et = fd->next_int();
-		// if (fscanf(fd,"%d",&es) != 1){//source node
-		// 	return -1;
-		// }
-		// if (fscanf(fd,"%d",&et) != 1){//target node
-		// 	return -1;
-		// }
+
 		graph->out_adj_sizes[es]++;
 		graph->in_adj_sizes[et]++;
 
@@ -380,8 +334,6 @@ int read_gfd(const char* fileName, FileReader* fd, Graph* graph){
 			n = n->next;
 		}
 	}
-
-//	graph->sort_edges();
 
 	return 0;
 };

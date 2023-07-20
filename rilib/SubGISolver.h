@@ -2,7 +2,7 @@
  * SubGISolver.h
  */
 /*
-Copyright (c) 2022
+Copyright (c) 2023
 
 This library contains portions of other open source products covered by separate
 licenses. Please see the corresponding source files for specific terms.
@@ -52,29 +52,8 @@ public:
 	}
 
 
-//	virtual bool nodeCheck(int si, int ci, int* map_state_to_node){
-//		return domains[map_state_to_node[si]].get(ci);
-//	}
 
 	virtual bool edgesCheck(int si, int ci, int* solution, bool* matched){
-		/*int rsource, rtarget, source, target, eid;
-		int ii;
-		for(int me=0; me<mama.edges_sizes[si]; me++){
-			//std::cout<<"me "<<me<<"\n";
-			source = mama.edges[si][me].source;
-			target = mama.edges[si][me].target;
-			rsource = solution[ source ];
-			rtarget = solution[ target ];
-			
-			//eid = solution[ mama.edges[si][me].id ];
-
-			//std::cout<<"eidd "<<mama.edges[si][me].id<<"\n";
-
-			if(  edomains.domains[ mama.edges[si][me].id ].count( std::pair<int,int>(rsource,rtarget) ) ==0 ){
-				return false;
-			}
-		}
-		*/
 		return true;
 	}
 };

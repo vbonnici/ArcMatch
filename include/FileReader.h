@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2022
+Copyright (c) 2023
 
 This library contains portions of other open source products covered by separate
 licenses. Please see the corresponding source files for specific terms.
@@ -65,8 +65,6 @@ public:
         /* the whole file is now loaded in the memory buffer. */
 
         pi = 0;
-
-        //std::cout<<buffer<<"\n";
     }
 
     bool
@@ -92,8 +90,6 @@ public:
             buffer[pi] = '\0';
         }
         pi++;
-
-        //std::cout<<"ci "<<ci<<"; pi "<<pi<<"\n";
 
         return buffer+ci;
     }
@@ -124,27 +120,3 @@ public:
 
 
 };
-
-
-
-/*
-#include "timer.h"
-int main(int argc, char* argv[]){
-    TIMEHANDLE time_total_s = start_time();
-
-    std::cout<<argv[1]<<"\n";
-
-    FileReader fire(argv[1]);
-
-    while(fire.is_valid()){
-        //std::cout<<fire.next_string()<<"\n";
-        std::cout<<fire.next_int()<<"\n";
-    }
-
-
-    fire.close();
-
-
-    std::cout<<"total time "<<end_time(time_total_s)<<"\n";
-};
-*/

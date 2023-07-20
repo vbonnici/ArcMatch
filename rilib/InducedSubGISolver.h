@@ -2,7 +2,7 @@
  * InducedSubGISolver.h
  */
 /*
-Copyright (c) 2022
+Copyright (c) 2023
 
 This library contains portions of other open source products covered by separate
 licenses. Please see the corresponding source files for specific terms.
@@ -52,37 +52,7 @@ public:
 	}
 
 
-//	virtual bool nodeCheck(int si, int ci, int* map_state_to_node){
-//		return domains[map_state_to_node[si]].get(ci);
-//	}
-
 	virtual bool edgesCheck(int si, int ci, int* solution, bool* matched){
-		/*int rsource, rtarget, source, target, eid;
-		int ii;
-		for(int me=0; me<mama.edges_sizes[si]; me++){
-			source = mama.edges[si][me].source;
-			target = mama.edges[si][me].target;
-			rsource = solution[ source ];
-			rtarget = solution[ target ];
-			eid = solution[ mama.edges[si][me].id ];
-
-			for(ii=0; ii<rgraph.out_adj_sizes[rsource]; ii++){
-				if(rgraph.out_adj_list[rsource][ii] == rtarget){
-					if(! edgeComparator.compare(rgraph.out_adj_attrs[rsource][ii],  mama.edges[si][me].attr)){
-						return false;
-					}
-					else{
-						break;
-					}
-				}
-				//else if(rgraph.out_adj_list[rsource][ii] > rtarget){
-				//	return false;
-				//}
-			}
-			if(ii >= rgraph.out_adj_sizes[rsource]){
-				return false;
-			}
-		}*/
 		
 		int ii;
 

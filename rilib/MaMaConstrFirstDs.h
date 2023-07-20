@@ -2,7 +2,7 @@
  * MaMaConstrFirst.h
  */
 /*
-Copyright (c) 2022
+Copyright (c) 2023
 
 This library contains portions of other open source products covered by separate
 licenses. Please see the corresponding source files for specific terms.
@@ -66,7 +66,6 @@ public:
 			weights[i] = new int[3];
 			weights[i][0] = 0;
 			weights[i][1] = 0;
-			//weights[i][2] = ssg.out_adj_sizes[i] + ssg.in_adj_sizes[i];
 			weights[i][2] = ssg.out_adj_sizes[i] + ssg.in_adj_sizes[i];
 			t_parent_node[i] = -1;
 			t_parent_type[i] = PARENTTYPE_NULL;
@@ -108,8 +107,6 @@ public:
 					t_parent_type[n] = PARENTTYPE_NULL;
 					t_parent_node[n] = -1;
 
-					//move queue left limit
-					//nqueueL++;
 					//update nodes' flags & weights
 					node_flags[n] = NS_CORE;
 					nIT = 0;
@@ -122,10 +119,8 @@ public:
 							if(node_flags[ni] == NS_UNV){
 								node_flags[ni] = NS_CNEIGH;
 								t_parent_node[ni] = n;
-//								if(nIT < ssg.out_adj_sizes[n])
-									t_parent_type[ni] = PARENTTYPE_OUT;
-//								else
-//									t_parent_type[ni] = PARENTTYPE_IN;
+								t_parent_type[ni] = PARENTTYPE_OUT;
+
 								//add to queue
 								map_state_to_node[nqueueR] = ni;
 								map_node_to_state[ni] = nqueueR;
@@ -152,11 +147,7 @@ public:
 							if(node_flags[ni] == NS_UNV){
 								node_flags[ni] = NS_CNEIGH;
 								t_parent_node[ni] = n;
-//								if(nIT < ssg.out_adj_sizes[n])
-//									t_parent_type[ni] = PARENTTYPE_OUT;
-//								else
-									t_parent_type[ni] = PARENTTYPE_IN;
-								//add to queue
+								t_parent_type[ni] = PARENTTYPE_IN;
 								map_state_to_node[nqueueR] = ni;
 								map_node_to_state[ni] = nqueueR;
 								nqueueR++;
@@ -178,16 +169,9 @@ public:
 		}
 		nqueueL = nof_single_domains;
 
-
-		/*for(int i=0; i<nof_single_domains; i++){
-			std::cout<<i<<" "<<map_state_to_node[i]<<" "<<map_node_to_state[map_state_to_node[i]]<<"\n";
-		}*/
-
-
 #ifdef MDEBUG
 	std::cout<<"others...\n";
 #endif
-		//if(nof_single_domains != nof_sn){
 		while(si < nof_sn){
 
 			if(nqueueL == nqueueR){
@@ -259,10 +243,7 @@ public:
 					if(node_flags[ni] == NS_UNV){
 						node_flags[ni] = NS_CNEIGH;
 						t_parent_node[ni] = n;
-//						if(nIT < ssg.out_adj_sizes[n])
-							t_parent_type[ni] = PARENTTYPE_OUT;
-//						else
-//							t_parent_type[ni] = PARENTTYPE_IN;
+						t_parent_type[ni] = PARENTTYPE_OUT;
 						//add to queue
 						map_state_to_node[nqueueR] = ni;
 						map_node_to_state[ni] = nqueueR;
@@ -289,11 +270,7 @@ public:
 					if(node_flags[ni] == NS_UNV){
 						node_flags[ni] = NS_CNEIGH;
 						t_parent_node[ni] = n;
-//						if(nIT < ssg.out_adj_sizes[n])
-//							t_parent_type[ni] = PARENTTYPE_OUT;
-//						else
-							t_parent_type[ni] = PARENTTYPE_IN;
-						//add to queue
+						t_parent_type[ni] = PARENTTYPE_IN;
 						map_state_to_node[nqueueR] = ni;
 						map_node_to_state[ni] = nqueueR;
 						nqueueR++;
@@ -311,132 +288,11 @@ public:
 
 			si++;
 		}
-		//}
-
-/*
-#ifdef MDEBUG
-	std::cout<<"mama structs...\n";
-#endif
-		int e_count,o_e_count,i_e_count; int i;
-		for(si = 0; si<nof_sn; si++){
-
-#ifdef MDEBUG
-	std::cout<<"\tnode ("<<si<<","<<map_state_to_node[si]<<") /"<<nof_sn<<"\n";
-#endif
-
-			n = map_state_to_node[si];
-
-			//nodes_attrs[si] = ssg.nodes_attrs[n];
-#ifdef MDEBUG
-	std::cout<<"\tparents...\n";
-#endif
-			if(t_parent_node[n] != -1)
-				parent_state[si] = map_node_to_state[t_parent_node[n]];
-			else
-				parent_state[si] = -1;
-			parent_type[si] = t_parent_type[n];
-
-
-#ifdef MDEBUG
-	std::cout<<"\tedge counts...\n";
-#endif
-			e_count = 0;
-			o_e_count = 0;
-			for(i=0; i<ssg.out_adj_sizes[n]; i++){
-				if(map_node_to_state[ssg.out_adj_list[n][i]] < si){
-					e_count++;
-					o_e_count++;
-				}
-			}
-			i_e_count = 0;
-			for(i=0; i<ssg.in_adj_sizes[n]; i++){
-				if(map_node_to_state[ssg.in_adj_list[n][i]] < si){
-					e_count++;
-					i_e_count++;
-				}
-			}
-
-
-			edges_sizes[si] = e_count;
-			o_edges_sizes[si] = o_e_count;
-			i_edges_sizes[si] = i_e_count;
-
-
-#ifdef MDEBUG
-	std::cout<<"\tmama edges ["<<edges_sizes[si]<<"]["<<o_edges_sizes[si]<<"]["<<i_edges_sizes[si]<<"]...\n";
-#endif
-
-			edges[si] = new MaMaEdge[e_count];
-
-			e_count = 0;
-			for(i=0; i<ssg.out_adj_sizes[n];i++){
-#ifdef MDEBUG
-	std::cout<<"\t\tneigh("<<ssg.out_adj_list[n][i]<<")\n";
-#endif
-				if(map_node_to_state[ssg.out_adj_list[n][i]] < si){
-
-#ifdef MDEBUG
-	std::cout<<"\t\tadd("<<map_node_to_state[ssg.out_adj_list[n][i]]<<","<<ssg.out_adj_list[n][i]<<")\n";
-#endif
-					edges[si][e_count].source = map_node_to_state[n];
-					edges[si][e_count].target = map_node_to_state[ssg.out_adj_list[n][i]];
-					e_count++;
-				}
-			}
-			for(i=0; i<ssg.in_adj_sizes[n];i++){
-				if(map_node_to_state[ssg.in_adj_list[n][i]] < si){
-#ifdef MDEBUG
-	std::cout<<"\t\tadd("<<map_node_to_state[ssg.in_adj_list[n][i]]<<","<<ssg.in_adj_list[n][i]<<")\n";
-#endif
-					edges[si][e_count].target = map_node_to_state[n];
-					edges[si][e_count].source = map_node_to_state[ssg.in_adj_list[n][i]];
-					e_count++;
-				}
-			}
-
-#ifdef MDEBUG
-	std::cout<<"\tdone\n";
-#endif
-		}
-
-#ifdef MDEBUG
-	std::cout<<"mama done\n";
-#endif
-*/
-
+	
 	int e_count,o_e_count,i_e_count,nn;
 	for(int si = 0; si<nof_sn; si++){
 
 		n = map_state_to_node[si];
-
-		/*for(int j=0; j<ssg.out_adj_sizes[n]; j++){
-			nn = ssg.out_adj_list[n][j];
-			if(map_node_to_state[nn] < si){
-				if(parent_state[si] == -1){
-#ifdef MDEBUG					
-					std::cout<<"IN:"<<n<<" <- "<<nn<<"\n";
-#endif
-					parent_state[si] = map_node_to_state[nn];
-					parent_type[si] = PARENTTYPE_IN;
-					break;
-				}
-			}
-		}
-		if(parent_state[si] == -1){
-			for(int j=0; j<ssg.in_adj_sizes[n]; j++){
-				nn = ssg.in_adj_list[n][j];
-				if(map_node_to_state[nn] < si){
-					if(parent_state[si] == -1){
-#ifdef MDEBUG
-						std::cout<<"OUT:"<<n<<" <- "<<nn<<"\n";
-#endif
-						parent_state[si] = map_node_to_state[nn];
-						parent_type[si] = PARENTTYPE_OUT;
-						break;
-					}
-				}
-			}
-		}*/
 
 		if(t_parent_node[n] != -1)
 			parent_state[si] = map_node_to_state[t_parent_node[n]];

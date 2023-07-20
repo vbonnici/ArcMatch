@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2022
+Copyright (c) 2023
 
 This library contains portions of other open source products covered by separate
 licenses. Please see the corresponding source files for specific terms.
@@ -73,14 +73,6 @@ public:
 	void flood_centrality(Graph &query, int nfs, int inode, double *centrality, double *ccentrality, int *depth, 
 							double **o_query_e_weights, double **i_query_e_weights, 
 							NodeFlag *node_flags, int max_depth){
-		//std::cout<<"flooding "<<inode<<"...\n";
-		//std::cout<<"CORES: ";
-		//for(int cn=0; cn<nfs; cn++){
-		//	if(node_flags[cn] == NS_CORE){
-		//		std::cout<<cn<<" ";
-		//	}
-		//}
-		//std::cout<<"\n";
 
 		int *queue = new int[nfs];
 		int cn,n;
@@ -106,7 +98,6 @@ public:
 			}
 			else{
 				depth[n] = 0;
-				//centrality[cn] += query_e_weights[cn][i];
 				centrality[cn] += 1.0;
 			}
 		}
@@ -121,7 +112,6 @@ public:
 			}
 			else{
 				depth[n] = 0;
-				//centrality[cn] += query_e_weights[cn][i];
 				centrality[cn] += 1.0;
 			}
 		}
@@ -204,36 +194,6 @@ public:
 		}
 		
 
-		//std::cout<<"depths: ";
-		//for(int cn=0;cn<nfs;cn++){
-		//	std::cout<<"["<<cn<<" "<<depth[cn]<<"]";
-		//}
-		//std::cout<<"\n";
-
-		/*
-		double in, out;
-		for(cn=0; cn<nfs; cn++){
-			if((node_flags[cn] != NS_CORE)  && (depth[cn] < nfs)){
-				in = out = 0.0;
-				for(int i=0; i<query.out_adj_sizes[cn]; i++){
-					n = query.out_adj_list[cn][i];
-					if(depth[n] <= depth[cn]){	
-						in++;
-					}
-					else{
-						out++;
-					}
-				}
-				//std::cout<<"centrality["<<cn<<"] "<<centrality[cn]<<" ";
-
-				//centrality[cn] *= in / (in + out);
-				//ccentrality[cn] *= in / (in + out);
-
-				//std::cout<<centrality[cn]<<"\n";
-			}
-		}
-		*/
-
 		node_flags[inode] = NS_CNEIGH;
 	}
 
@@ -241,14 +201,7 @@ public:
 		for(int i=0; i<5; i++){
 			scores[inode][i] = 0.0;
 		}
-		/*for(int i=0; i<nfs; i++){
-			if(i != inode){
-				if(depth[i] < 4){
-					//std::cout<<"@ "<<i<<" "<<depth[i]<<" "<< centrality[i]<<"\n";
-					scores[inode][depth[i]] += centrality[i];
-				}
-			}
-		}*/
+
 		for(int i=0; i<nfs; i++){
 			if(i != inode){
 				if(depth[i] == 1){
@@ -267,20 +220,6 @@ public:
 		
 	}
 
-	/*void first_scores(int nfs, int inode , Graph &query, double **scores, double **query_e_weights){
-		for(int i=0; i<5; i++){
-			scores[inode][i] = 0.0;
-		}
-		double score;
-		for(int i=0; i<query.out_adj_sizes[inode]; i++){
-			score = query_e_weights[inode][i];
-			if((i==0) || ((score < scores[inode][0]))){
-				scores[inode][0] = score;
-			}
-			scores[inode][1] += score;
-		}
-		scores[inode][1] /= (double)query.out_adj_sizes[inode];
-	}*/
 
 	double wcompare(double **scores, int ni, int nj){
 		double ret = 0.0;
@@ -301,7 +240,7 @@ public:
 		for(int i=0; i<query.nof_nodes; i++){
 			o_query_e_weights[i] = new double[query.out_adj_sizes[i]];
 			for(int j=0; j<query.out_adj_sizes[i]; j++){
-				//o_query_e_weights[i][j] = edge_domains.domains[edge_domains.pattern_out_adj_eids[i][j]].size();
+				
 				o_query_e_weights[i][j] = 
 				1.0-(
 					((double)edge_domains.domains[edge_domains.pattern_out_adj_eids[i][j]].size())
@@ -313,26 +252,11 @@ public:
 		}
 
 
-		/*double **i_query_e_weights = new double*[nfs];
-		for(int i=0; i<query.nof_nodes; i++){
-			i_query_e_weights[i] = new double[query.in_adj_sizes[i]];
-			for(int j=0; j<query.in_adj_sizes[i]; j++){
-				int n = query.in_adj_list[i][j];
-
-				for(int nj=0; nj<query.out_adj_sizes[n]; nj++){
-					if(query.out_adj_list[n][nj] == i){
-						i_query_e_weights[i][j] = edge_domains.domains[edge_domains.pattern_out_adj_eids[n][nj]].size();
-						break;
-					}
-				}
-			}
-		}
-		*/
 		double **i_query_e_weights = new double*[nfs];
 		for(int i=0; i<query.nof_nodes; i++){
 			i_query_e_weights[i] = new double[query.in_adj_sizes[i]];
 			for(int j=0; j<query.in_adj_sizes[i]; j++){
-				//i_query_e_weights[i][j] = edge_domains.domains[edge_domains.pattern_in_adj_eids[i][j]].size();
+				
 				i_query_e_weights[i][j] = 
 				1.0-(
 					((double)edge_domains.domains[edge_domains.pattern_in_adj_eids[i][j]].size())
@@ -405,9 +329,7 @@ public:
 				node_flags[i] = oflag;
 				update_score(nfs, i, query, scores, centrality,  ccentrality, depth);
 			}
-			//for(int i=0; i<nfs; i++){
-			//	first_scores(nfs, i, query, scores, query_e_weights);
-			//}
+
 
 	#ifdef MDEBUG
 			for(int cn=0; cn<nfs; cn++){
@@ -436,9 +358,6 @@ public:
 #ifdef MDEBUG
 			std::cout<<"CHOOSEN "<<max_score_node<<"\n";
 #endif
-			//int n,nn;
-			//int si = 0;
-			//int nn;
 			ordering[si] = max_score_node;
 			node_flags[ max_score_node ] = NS_CORE;
 			for(int i=0; i<query.out_adj_sizes[max_score_node]; i++){
@@ -597,7 +516,7 @@ public:
 			}
 		}
 		i_e_count = 0;
-		//std::vector< std::pair<double,int> > irdeges;
+	
 		for(int i=0; i<query.in_adj_sizes[n]; i++){
 			if(map_node_to_state[query.in_adj_list[n][i]] < si){
 				e_count++;
@@ -645,59 +564,10 @@ public:
 					e_count++;
 				}
 			}
-			
-			
-			/*
-			for(int i=0; i<query.out_adj_sizes[n];i++){
-				if(map_node_to_state[query.out_adj_list[n][i]] < si){
-					edges[si][e_count].source = map_node_to_state[n];
-					edges[si][e_count].target = map_node_to_state[query.out_adj_list[n][i]];
-					e_count++;
-				}
-			}
-			for(int i=0; i<query.in_adj_sizes[n];i++){
-				if(map_node_to_state[query.in_adj_list[n][i]] < si){
-					edges[si][e_count].target = map_node_to_state[n];
-					edges[si][e_count].source = map_node_to_state[query.in_adj_list[n][i]];
-					e_count++;
-				}
-			}
-			*/
-			
+					
 		}
 	}
 
-	/*
-		//double **query_e_weights = new double*[nfs];
-		for(int i=0; i<query.nof_nodes; i++){
-			//query_e_weights[i] = new double[query.out_adj_sizes[i]];
-			delete [] query_e_weights[i];
-		}
-		delete [] query_e_weights;
-
-		//double **scores = new double*[nfs];
-		for(int i=0; i<nfs; i++){
-			//scores[i] = new double[5];
-			delete [] scores[i];
-		}
-		delete [] scores;
-	
-		//int *ordering = new int[nfs];
-		delete [] ordering;
-
-		//NodeFlag *node_flags = new NodeFlag[nfs];
-		delete [] node_flags;
-
-		
-
-		//double *centrality = new double[nfs];
-		//double *ccentrality = new double[nfs];
-		//int *depth = new int[nfs];
-		delete [] centrality;
-		delete [] ccentrality;
-		delete [] depth;
-		*/
-		
 	}
 
 };

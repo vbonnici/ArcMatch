@@ -3,7 +3,7 @@
  *
  */
 /*
-Copyright (c) 2022
+Copyright (c) 2023
 
 This library contains portions of other open source products covered by separate
 licenses. Please see the corresponding source files for specific terms.
@@ -73,7 +73,6 @@ public:
 	}
 
 	~sbitset(){
-		//delete [] _bits;
 		free(_bits);
 	}
 
@@ -326,24 +325,7 @@ public:
 				return false;
 			}
 	};
-//	iterator& begin(){
-//		if(is_empty())
-//			return end();
-//		iterator *IT = new iterator(*this);
-//		return *IT;
-//	}
-//	iterator& first_ones(){
-//		if(is_empty())
-//			return end();
-//		iterator *IT = new iterator(*this);
-//		if(IT->second != 1)
-//			IT->next_ones();
-//		return *IT;
-//	}
-//	iterator& end(){
-//		iterator *IT = new iterator(*this, _nblocks);
-//		return *IT;
-//	}
+
 	iterator begin(){
 		if(is_empty())
 			return end();
