@@ -3,7 +3,7 @@
  *
  */
 /*
-Copyright (c) 2022
+Copyright (c) 2023
 
 This library contains portions of other open source products covered by separate
 licenses. Please see the corresponding source files for specific terms.
@@ -36,38 +36,30 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <map>
 #include <sstream>
 
+class IDer {
+  private:
+    std::map<std::string, int> imap;
 
-class IDer{
-private:
+  public:
+    IDer() {}
 
-	std::map<std::string, int> imap;
+    ~IDer() {}
 
-public:
-	IDer() {
-	}
-
-	~IDer(){
-	}
-
-	s_size_t idFor(std::string* value){
-		int ret = 0;
-		if(value == NULL){
-			ret = 0;
-		}
-		else{
-			std::map<std::string, int>::iterator IT = imap.find(*value);
-			if(IT == imap.end()){
-				imap.insert(*(new std::pair<std::string, int>(*value, ((int)imap.size())+1)));
-				ret = ((int)imap.size());
-			}
-			else{
-				ret = IT->second;
-			}
-		}
-		return ret;
-	}
-
+    s_size_t idFor(std::string *value) {
+        int ret = 0;
+        if (value == NULL) {
+            ret = 0;
+        } else {
+            std::map<std::string, int>::iterator IT = imap.find(*value);
+            if (IT == imap.end()) {
+                imap.insert(*(new std::pair<std::string, int>(*value, ((int)imap.size()) + 1)));
+                ret = ((int)imap.size());
+            } else {
+                ret = IT->second;
+            }
+        }
+        return ret;
+    }
 };
-
 
 #endif /* IDER_H_ */

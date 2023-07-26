@@ -2,7 +2,7 @@
  * SubGISolver.h
  */
 /*
-Copyright (c) 2022
+Copyright (c) 2023
 
 This library contains portions of other open source products covered by separate
 licenses. Please see the corresponding source files for specific terms.
@@ -32,54 +32,15 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "Solver.h"
 
-namespace rilib{
+namespace rilib {
 
-class SubGISolver : public Solver{
-public:
+class SubGISolver : public Solver {
+  public:
+    SubGISolver(MatchingMachine &_mama, Graph &_rgraph, Graph &_qgraph, AttributeComparator &_nodeComparator, AttributeComparator &_edgeComparator, MatchListener &_matchListener, sbitset *_domains, int *_domains_size, EdgeDomains &_edomains) : Solver(_mama, _rgraph, _qgraph, _nodeComparator, _edgeComparator, _matchListener, _domains, _domains_size, _edomains) {}
 
-	SubGISolver(
-				MatchingMachine& _mama,
-				Graph& _rgraph,
-				Graph& _qgraph,
-				AttributeComparator& _nodeComparator,
-				AttributeComparator& _edgeComparator,
-				MatchListener& _matchListener,
-				sbitset *_domains,
-				int *_domains_size,
-				EdgeDomains& _edomains
-				) : Solver(_mama, _rgraph, _qgraph, _nodeComparator, _edgeComparator, _matchListener, _domains, _domains_size, _edomains){
-
-	}
-
-
-//	virtual bool nodeCheck(int si, int ci, int* map_state_to_node){
-//		return domains[map_state_to_node[si]].get(ci);
-//	}
-
-	virtual bool edgesCheck(int si, int ci, int* solution, bool* matched){
-		/*int rsource, rtarget, source, target, eid;
-		int ii;
-		for(int me=0; me<mama.edges_sizes[si]; me++){
-			//std::cout<<"me "<<me<<"\n";
-			source = mama.edges[si][me].source;
-			target = mama.edges[si][me].target;
-			rsource = solution[ source ];
-			rtarget = solution[ target ];
-			
-			//eid = solution[ mama.edges[si][me].id ];
-
-			//std::cout<<"eidd "<<mama.edges[si][me].id<<"\n";
-
-			if(  edomains.domains[ mama.edges[si][me].id ].count( std::pair<int,int>(rsource,rtarget) ) ==0 ){
-				return false;
-			}
-		}
-		*/
-		return true;
-	}
+    virtual bool edgesCheck(int si, int ci, int *solution, bool *matched) { return true; }
 };
 
-}
-
+} // namespace rilib
 
 #endif /* SUBGISOLVER_H_ */
