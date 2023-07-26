@@ -24,7 +24,7 @@ You are free to link or use ArcMatch inside the source code of your own program.
 
 ## Requirements
 
-***ArcMatch*** is developed in C++. Thus, an operating system with g++ compiler must be available to compile and use the software.
+***ArcMatch*** is developed in C++. Thus, an operating system with g++ compiler must be available to compile and use the software, gcc version 9.4.0 (Ubuntu 9.4.0-1ubuntu1~20.04.1).
 No dependencies out of the standard GNU C++ library are required.
 
 <hr />
