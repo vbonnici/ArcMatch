@@ -155,6 +155,32 @@ A further synthetic dataset, used for assessing the scalability of ArcMatch, is 
 <hr />
 
 
+## Running from Docker
+
+Here we give instructions on how to run the software on a Docker container with the same specifications of the requirements.
+
+**WE HARDLY DISCOURAGE TO RUN PERFORMANCE TESTS IN THIS MODALITY**, because within a container an executable is slower than running it in a non-dockerized environment.
+
+
+To build the container, locate in this directory (where the dockerfile file is located) and digit :
+```
+docker build -t arcmatch .   
+```
+The build will compile all the versions that this repository makes available.
+<br>
+To run arcmatch on the examples files digit:
+```
+ docker run arcmatch /arcmatch/arcmatch mono gfd  /arcmatch/file_format_examples/reference.gfd /arcmatch/file_format_examples/query.gfd
+```
+Remember that to run the executable on local files you must copy or mount them into the counter first.
+For example, if your files are located in a local directory `/myhome/mydirectory`, you can use the option `-v` to link the directory into the container.
+```
+ docker run -v /myhome/mydirectory:/myfiles/ arcmatch /arcmatch/arcmatch mono gfd  /myfiles/reference.gfd /myfiles/query.gfd
+```
+
+<hr />
+
+
 ## Citation
 Please, cite the ***ArcMatch*** paper 
  
