@@ -182,7 +182,12 @@ For example, if your files are located in a local directory `/myhome/mydirectory
 
 
 ## Citation
-Please, cite the ***ArcMatch*** paper 
+Please, cite the ***ArcMatch*** paper and its predecessors
+
+     Bonnici, V., Grasso, R., Micale, G., Maria, A. D., Shasha, D., Pulvirenti, A., & Giugno, R. (2024). 
+     ArcMatch: high-performance subgraph matching for labelled graphs by exploiting edge domains. 
+     Data Mining and Knowledge Discovery, 38(6), 3868-3921.
+     https://doi.org/10.1007/s10618-024-01061-8
  
      Bonnici, V., Giugno, R., Pulvirenti, A., Shasha, D., & Ferro, A. (2013).
      A subgraph isomorphism algorithm and its application to biochemical data. 
