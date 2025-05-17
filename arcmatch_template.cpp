@@ -87,6 +87,8 @@ RE|NRE  (reduce or not edge domains)				REDUCE_EDGES is on for RE
 #include "fr_textdb_driver.h"
 #include "timer.h"
 
+#define FILTER_MM // Definisce la macro FILTER_MM
+
 
 #include "AttributeComparator.h"
 #include "Graph.h"

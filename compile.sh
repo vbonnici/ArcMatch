@@ -63,39 +63,39 @@ t14="-DNODE_D_CONV -DREDUCE_EDGES -DPATH_LENGTH=6 -DMAMA_NSL -DSOLVER_LF"
 t15="-DNODE_D_CONV -DEDGE_D_CONV -DMAMA_NS -DSOLVER_DP"
 t16="-DNODE_D_CONV -DEDGE_D_CONV -DMAMA_NSL -DSOLVER_LF"
 
-g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t1 $additional -o arcmatch-1
-g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t2 $additional -o arcmatch-2
-g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t3 $additional -o arcmatch-3 
-g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t4 $additional -o arcmatch-4 
-g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t5 $additional -o arcmatch-5 
-g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t6 $additional -o arcmatch-6 
+#g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t1 $additional -o arcmatch-1
+#g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t2 $additional -o arcmatch-2
+#g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t3 $additional -o arcmatch-3 
+#g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t4 $additional -o arcmatch-4 
+#g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t5 $additional -o arcmatch-5 
+#g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t6 $additional -o arcmatch-6 
 g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t7 $additional -o arcmatch-7
-g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t8 $additional -o arcmatch-8 
-g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t9 $additional -o arcmatch-9 
-g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t10 $additional -o arcmatch-10 
-g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t11 $additional -o arcmatch-11 
-g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t12 $additional -o arcmatch-12 
-g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t13 $additional -o arcmatch-13 
-g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t14 $additional -o arcmatch-14
-g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t15 $additional -o arcmatch-15
-g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t16 $additional -o arcmatch-16 
+#g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t8 $additional -o arcmatch-8 
+#g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t9 $additional -o arcmatch-9 
+#g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t10 $additional -o arcmatch-10 
+#g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t11 $additional -o arcmatch-11 
+#g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t12 $additional -o arcmatch-12 
+#g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t13 $additional -o arcmatch-13 
+#g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t14 $additional -o arcmatch-14
+#g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t15 $additional -o arcmatch-15
+#g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t16 $additional -o arcmatch-16 
 
 cp arcmatch-7 arcmatch
-cp arcmatch-13 arcmatch-lt
+#cp arcmatch-13 arcmatch-lt
 
 
 additional="-DPRINT_MATCHES"
 
 g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t7 $additional  -o arcmatch-print
-g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t13 $additional -o arcmatch-lt-print
+#g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t13 $additional -o arcmatch-lt-print
 
 
-additional="-DFIRST_100k_MATCHES"
+#additional="-DFIRST_100k_MATCHES"
 
-g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t7 $additional  -o arcmatch-100k
-g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t13 $additional -o arcmatch-lt-100k
+#g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t7 $additional  -o arcmatch-100k
+#g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t13 $additional -o arcmatch-lt-100k
 
-additional="-DFIRST_MATCH_ONLY"
+#additional="-DFIRST_MATCH_ONLY"
 
-g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t7 $additional  -o arcmatch-first
-g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t13 $additional -o arcmatch-lt-first
+#g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t7 $additional  -o arcmatch-first
+#g++ -std=c++11 -O3  arcmatch_template.cpp -I ./rilib/ -I ./include/  $t13 $additional -o arcmatch-lt-first

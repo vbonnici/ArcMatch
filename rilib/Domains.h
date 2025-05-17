@@ -553,8 +553,7 @@ void print_domains(Graph &query, Graph &target, sbitset *node_domains, EdgeDomai
     for (int i = 0; i < query.nof_nodes; i++) {
         std::cout << "node domain " << i << ":" << node_domains[i].count_ones() << ": ";
         for (sbitset::iterator it = node_domains[i].first_ones(); it != node_domains[i].end(); it.next_ones()) {
-        std:
-            cout << it.first << " ";
+        std::cout << it.first << " ";
         }
         std::cout << "\n";
     }
