@@ -183,7 +183,7 @@ static int verify_path_dfs(int* w, int w_len, int* omega_hat, int omega_len, int
     return 0;  // Nessun percorso valido trovato
 }
 
-static  path_reduction(int* w, int w_len, int max_len, sbitset* domains, Graph* query, Graph* target) {
+static void path_reduction(int* w, int w_len, int max_len, sbitset* domains, Graph* query, Graph* target) {
     int u = w[w_len - 1];
     int* omega_hat = (int*)malloc((max_len + 1) * sizeof(int));
     if(!omega_hat) return;
@@ -396,58 +396,7 @@ int match(
 	FileReader *fd = open_file(referencefile.c_str(), filetype);
 	if(fd != NULL){
 
-#ifdef PRINT_MATCHES
-    struct ConcreteListener : public MatchListener {
-    void match(int n, int *qIDs, int *rIDs) override {
-    std::cout << "M:{";
-    bool is_ring = false;
-    bool is_tie = false;
-	if (n > 3) {
-		is_ring = (rIDs[n-1] == rIDs[0]);  //anello completato
-		for(int k = 1; k < n-2 && !is_tie; k++) {
-			if(rIDs[n-1] == rIDs[k]) {
-				is_tie = (rIDs[n-1]==rIDs[k]); //cravatta
-			}
-	}
-    for(int i = 0; i < n; i++) {
-        if(i > 0) std::cout << ",";
-        std::cout << "(" << qIDs[i] << "," ;
-		if(rIDs[i] == -1) std::cout << "?";
-		else std::cout << rIDs[i];
-		std::cout << ")";
-	}
-		std::cout << "}";
-        
-        if(is_ring) std::cout << "[RING]";
-        if(is_tie) std::cout << "[TIE]";
-    }
-    std::cout << "}\n";
-}
 
-        void match_multiple(int n, int *qIDs, int *rIDs, int si, std::set<int> *leaf_domains) override {
-            std::cout << "MM:{domain:" << si << ",matches:[";
-            for(int i = 0; i < n; i++) {
-                if(i > 0) std::cout << ",";
-                std::cout << "(" << qIDs[i] << "," << rIDs[i] << ")";
-            }
-            std::cout << "]";
-            if(leaf_domains && !leaf_domains->empty()) {
-                std::cout << ",leaves:{";
-                bool first = true;
-                for(int d : *leaf_domains) {
-                    if(!first) std::cout << ",";
-                    std::cout << d;
-                    first = false;
-                }
-                std::cout << "}";
-            }
-            std::cout << "}" << std::endl;
-        }
-    };
-    MatchListener* matchListener = new ConcreteListener();
-#else
-    MatchListener* matchListener = new EmptyMatchListener();
-#endif
     
 
 		int i=0;
