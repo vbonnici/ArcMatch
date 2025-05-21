@@ -183,7 +183,7 @@ static int verify_path_dfs(int* w, int w_len, int* omega_hat, int omega_len, int
     return 0;  // Nessun percorso valido trovato
 }
 
-static void path_reduction(int* w, int w_len, int max_len, sbitset* domains, Graph* query, Graph* target) {
+static  path_reduction(int* w, int w_len, int max_len, sbitset* domains, Graph* query, Graph* target) {
     int u = w[w_len - 1];
     int* omega_hat = (int*)malloc((max_len + 1) * sizeof(int));
     if(!omega_hat) return;
