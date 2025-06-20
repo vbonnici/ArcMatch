@@ -57,7 +57,7 @@ class Graph {
     }
 
     void print() {
-        std::cout << "| ReferenceGraph[" << id << "] nof nodes[" << nof_nodes << "]\n";
+        std::cout << "| Graph[" << id << "] nof nodes[" << nof_nodes << "]\n";
         for (int i = 0; i < nof_nodes; i++) {
             std::cout << "| node[" << i << "]\n";
             std::cout << "| \tattribute_pointer[" << nodes_attrs[i] << "]\n";

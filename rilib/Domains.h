@@ -365,7 +365,7 @@ class DomainReduction {
         return true;
     };
 
-    bool verify_path_dfs(int *q_dfs, int *q_dfs_adji, int q_level, int *c_dfs, bool *c_visited, int c_level, bool circle) {
+    bool verify_path_dfs(int *q_dfs, int *q_dfs_adji, int q_level, int *c_dfs, bool *c_visited, int c_level, bool circle,bool isTie,int tie_k) {    
         if (c_level == q_level - 1) {
             if (circle) {
                 unordered_edge_set eset = edge_domains.domains[edge_domains.pattern_out_adj_eids[q_dfs[c_level]][q_dfs_adji[c_level + 1]]];
@@ -375,23 +375,39 @@ class DomainReduction {
                     }
                 }
                 return false;
-            } else {
+            } 
+            else if (isTie && tie_k != -1) {
+                if(c_dfs[c_level] == c_dfs[tie_k]) {
+                    return true;
+                }
+                std::cout << "Cravatta non valida" << std::endl;
+                return false;
+            } 
+            else {
+                std::cout<<"Verifico percorso"<<std::endl;
                 unordered_edge_set eset = edge_domains.domains[edge_domains.pattern_out_adj_eids[q_dfs[c_level]][q_dfs_adji[c_level + 1]]];
                 for (unordered_edge_set::iterator eit = eset.begin(); eit != eset.end(); eit++) {
+                    // Se l'arco esiste e il nodo destinazione non è già stato visitato nel percorso corrente
                     if ((eit->first == c_dfs[c_level]) && (!c_visited[eit->second])) {
+                        std::cout << " Percorso semplice valido (ultimo arco trovato).\n";
                         return true;
                     }
                 }
+                std::cout << " Percorso semplice non valido (nessun arco trovato).\n";
                 return false;
             }
-        } else {
+        }
+        else {
+            if (c_level +1 >= q_level) {
+                return false;
+            }
             bool found = false;
             unordered_edge_set eset = edge_domains.domains[edge_domains.pattern_out_adj_eids[q_dfs[c_level]][q_dfs_adji[c_level + 1]]];
             for (unordered_edge_set::iterator eit = eset.begin(); eit != eset.end(); eit++) {
                 if ((eit->first == c_dfs[c_level]) && (!c_visited[eit->second])) {
                     c_dfs[c_level + 1] = eit->second;
                     c_visited[eit->second] = true;
-                    found |= verify_path_dfs(q_dfs, q_dfs_adji, q_level, c_dfs, c_visited, c_level + 1, circle);
+                    found |= verify_path_dfs(q_dfs, q_dfs_adji, q_level, c_dfs, c_visited, c_level + 1, circle, isTie, tie_k);
                     c_visited[eit->second] = false;
                     if (found) {
                         break;
@@ -400,10 +416,9 @@ class DomainReduction {
             }
             return found;
         }
-        return false;
     };
 
-    void verify_path(int *q_dfs, int *q_dfs_adji, int q_level, bool circle) {
+    void verify_path(int *q_dfs, int *q_dfs_adji, int q_level, bool circle,bool isTie, int tie_k) {
         if (q_level > 1) {
             int *c_dfs = new int[query.nof_nodes];
             bool *c_visited = new bool[nof_target_nodes];
@@ -418,7 +433,7 @@ class DomainReduction {
                 c_dfs[0] = cnode;
                 c_visited[cnode] = true;
 
-                if (!verify_path_dfs(q_dfs, q_dfs_adji, q_level, c_dfs, c_visited, 0, circle)) {
+                if (!verify_path_dfs(q_dfs, q_dfs_adji, q_level, c_dfs, c_visited, 0, circle,isTie, tie_k)) {
                     node_domains[q_dfs[0]].set(cnode, false);
                     removed = true;
                 }
@@ -434,11 +449,13 @@ class DomainReduction {
         }
     };
 
-    /*
-    This is a temporary version which works for undirected graphs
-    because only out edges are visited during the DFS visit.
-    */
     void reduce_by_paths_dfs(int *dfs, int *dfs_adji, bool *visited, int level, int max_lp) {
+        std::cout << "DFS level: " << level << "\n";
+        std::cout << "Percorso corrente: ";
+        for(int i=0;i<= level;i++) {
+            std::cout << dfs[i] << " ";
+        }
+
         int n;
         int nof_p = 0;
         for (int ni = 0; ni < query.out_adj_sizes[dfs[level]]; ni++) {
@@ -450,32 +467,92 @@ class DomainReduction {
 
                     dfs[level + 1] = n;
                     dfs_adji[level + 1] = ni;
-                    verify_path(dfs, dfs_adji, level + 1, false);
+                    verify_path(dfs, dfs_adji, level + 1, false, false, -1);
                 } else {
                     nof_p++;
                     dfs[level + 1] = n;
                     dfs_adji[level + 1] = ni;
 
                     if (level == max_lp) {
-                        verify_path(dfs, dfs_adji, level + 1, false);
+                        verify_path(dfs, dfs_adji, level + 1, false, false, -1);
                     } else {
                         visited[n] = true;
                         reduce_by_paths_dfs(dfs, dfs_adji, visited, level + 1, max_lp);
                         visited[n] = false;
                     }
                 }
-            } else if ((level > 0) && (n != dfs[level - 1]) && (n == dfs[0])) {
-                nof_p++;
-                dfs[level + 1] = n;
-                dfs_adji[level + 1] = ni;
-
-                verify_path(dfs, dfs_adji, level + 1, true);
+            } else{
+                if ((level > 0) && (n != dfs[level - 1]) && (n == dfs[0])) {
+                    nof_p++;
+                    dfs[level + 1] = n;
+                    dfs_adji[level + 1] = ni;
+                    verify_path(dfs, dfs_adji, level + 1, true, false, -1);
+                } else {
+                    if ((level == query.nof_nodes - 2) || (level == max_lp)) {
+                        std::cout << "Verifica percorso completo/max_lp raggiunto \n";
+                        // calcola la cravatta durante l'esplorazione e cerca solo nei nodi già visitati del percorso corrente
+                        for (int k = 1; k < level; k++) {
+                            if (n == dfs[k]) {
+                                std::cout << " Cravatta trovata in posizione: " << k;
+                                //verify_path(dfs, dfs_adji, level + 1, false, true, k);
+                                break;
+                            }
+                        }
+                    }
+                    //verify_path(dfs, dfs_adji, level + 1, false, true, k);
+                }
             }
         }
         if ((level > 0) && (nof_p == 0)) {
-            verify_path(dfs, dfs_adji, level - 1, false);
+            verify_path(dfs, dfs_adji, level - 1, false, false, -1);
         }
-    };
+
+        /*
+        int nof_p = 0;
+        for (int ni = 0; ni < query.out_adj_sizes[dfs[level]]; ni++) {
+            int n = query.out_adj_list[dfs[level]][ni];
+            nof_p++;
+
+            dfs[level+1]=n;
+            dfs_adji[level+1]=ni;
+
+            std::cout << "Visito nodo: " << n << " ( " << dfs[level] << " )\n";
+            std::cout << "Nodi visitati: ";     
+            if (!visited[n]) {
+                bool should_verify = (level == query.nof_nodes - 2) || (level == max_lp);
+
+                if (should_verify) {
+
+                    std::cout << "Verifica percorso completo/max_lp raggiunto \n";
+                    // calcola la cravatta durante l'esplorazione e cerca solo nei nodi già visitati del percorso corrente
+                    std::vector<int> tie_positions;
+                    for (int k = 1; k < level; k++) {
+                        if (n == dfs[k]) {
+                            tie_positions.push_back(k);
+                            std::cout << " Cravatta trovata in posizione: " << k;
+                        }
+                    }
+                    verify_path(dfs, dfs_adji, level + 1, false, tie_positions);
+
+                } else {
+                    std::cout << "Continua esplorazione : ";
+                    visited[n]=true;
+                    reduce_by_paths_dfs(dfs, dfs_adji, visited, level + 1, max_lp);
+                    visited[n]=false;
+                }
+            }else if ((level > 0) && (n != dfs[level - 1]) && (n == dfs[0])) {
+                std::cout << "(trovato anello) - verifica percorso: \n";
+                verify_path(dfs, dfs_adji, level + 1, true, {});
+            }
+        }
+        
+        if ((level > 0) && (nof_p == 0)) {
+            // Chiamata senza controllo cravatte
+            std::cout << "Nessun nodo visitabile, verifica percorso: \n";
+            verify_path(dfs, dfs_adji, level - 1, false, {});
+        }
+        */
+    }
 
     void reduce_by_paths(int starting_node, int max_lp) {
         int *dfs = new int[query.nof_nodes];
@@ -553,7 +630,7 @@ void print_domains(Graph &query, Graph &target, sbitset *node_domains, EdgeDomai
     for (int i = 0; i < query.nof_nodes; i++) {
         std::cout << "node domain " << i << ":" << node_domains[i].count_ones() << ": ";
         for (sbitset::iterator it = node_domains[i].first_ones(); it != node_domains[i].end(); it.next_ones()) {
-        std::cout << it.first << " ";
+            std::cout << it.first << " ";
         }
         std::cout << "\n";
     }

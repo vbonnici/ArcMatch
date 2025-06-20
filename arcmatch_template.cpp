@@ -22,7 +22,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY
 WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-//commento per primo commit
+
 
 
 /*
@@ -87,8 +87,6 @@ RE|NRE  (reduce or not edge domains)				REDUCE_EDGES is on for RE
 #include "fr_textdb_driver.h"
 #include "timer.h"
 
-#define FILTER_MM // Definisce la macro FILTER_MM
-
 
 #include "AttributeComparator.h"
 #include "Graph.h"
@@ -133,113 +131,8 @@ enum MATCH_TYPE {
 void usage(char* args0);
 int match(MATCH_TYPE matchtype, GRAPH_FILE_TYPE filetype,	std::string& referencefile,	std::string& queryfile);
 
-static int verify_path_dfs(int* w, int w_len, int* omega_hat, int omega_len, int is_ring, int is_tie, int k, sbitset* domains, Graph* query, Graph* target) {
-	 if (omega_len == w_len) return 1;  // Percorso completato con successo
-
-    int i = omega_len;
-    int uq = w[i];
-    int vq = w[i + 1];
-
-    // Itera su tutti i nodi target 'ut' nel dominio di 'uq'
-    for (int ut = 0; ut < target->nof_nodes; ut++) {
-        if (!domains[uq].get(ut)) continue;  // Salta se 'ut' non è nel dominio
-
-        // Itera su tutti i nodi target 'vt' nel dominio di 'vq'
-        for (int vt = 0; vt < target->nof_nodes; vt++) {
-            if (!domains[vq].get(vt)) continue;  // Salta se 'vt' non è nel dominio
-
-            // Verifica se l'arco (ut, vt) esiste nel target ED è compatibile
-            if (target->out_adj_list[ut][vt] == 1) {
-                // Controlla se 'ut' corrisponde al nodo corrente in omega_hat
-                if (ut == omega_hat[i]) {
-                    // 1. Controllo ANELLO (se richiesto)
-                    if (is_ring && (omega_len == w_len - 1) && (vt == omega_hat[0])) {
-                        return 1;
-                    }
-                    // 2. Controllo CRAVATTA (se richiesto)
-                    if (is_tie && (omega_len == w_len - 1) && (vt == omega_hat[k])) {
-                        return 1;
-                    }
-                    // 3. Estensione standard del percorso (senza cicli interni)
-                    int vt_in_path = 0;
-                    for (int j = 0; j < omega_len; j++) {
-                        if (omega_hat[j] == vt) {
-                            vt_in_path = 1;
-                            break;
-                        }
-                    }
-                    if (!vt_in_path) {
-                        omega_hat[i + 1] = vt;
-                        if (verify_path_dfs(w, w_len, omega_hat, omega_len + 1,
-                                          is_ring, is_tie, k,
-                                          domains, query, target)) {
-                            return 1;
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return 0;  // Nessun percorso valido trovato
-}
-
-static void path_reduction(int* w, int w_len, int max_len, sbitset* domains, Graph* query, Graph* target) {
-    int u = w[w_len - 1];
-    int* omega_hat = (int*)malloc((max_len + 1) * sizeof(int));
-    if(!omega_hat) return;
-    omega_hat[0] = w[0];
-
-    for(int v = 0; v < query->nof_nodes; v++) {
-        if(query->out_adj_list[u][v] == 1) {
-            // Caso 1: ANELLO
-            if(v == w[0] && w_len > 2) {
-                if(verify_path_dfs(w, w_len + 1, omega_hat, 1, 1, 0, 0, domains, query, target)) {
-                    std::cout << "RING confirmed - applying domain reduction" << std::endl;
-                    // Logica di riduzione diretta qui
-                }
-            }
-            // Caso 2: CRAVATTA
-            else if(w_len >= 4) {
-                for(int k = 1; k <= w_len - 3; k++) {
-                    if(v == w[k]) {
-                        if(verify_path_dfs(w, w_len + 1, omega_hat, 1, 0, 1, k + 1, domains, query, target)) {
-                            std::cout << "TIE confirmed - applying domain reduction" << std::endl;
-                            // Logica di riduzione diretta qui
-                        }
-                        break;
-                    }
-                }
-            }
-            
-            // Caso 3: Estensione normale
-            bool v_in_path = false;
-            for(int k = 0; k < w_len && !v_in_path; k++) {
-                v_in_path = (w[k] == v);
-            }
-            if(!v_in_path && w_len < max_len) {
-                w[w_len] = v;
-                path_reduction(w, w_len + 1, max_len, domains, query, target);
-            }
-        }
-    }
-    free(omega_hat);
-}
-
-// Funzioni helper aggiuntive
-void reduce_domains_for_cycles(sbitset* domains, Graph* query, Graph* target, int* path, int len) {
-    // Implementa la logica specifica per la riduzione dei domini
-    // quando viene trovato un anello
-    std::cout << "Reducing domains based on RING structure" << std::endl;
-}
-
-void reduce_domains_for_ties(sbitset* domains, Graph* query, Graph* target, int* path, int len, int tie_point) {
-    // Implementa la logica specifica per la riduzione dei domini
-    // quando viene trovata una cravatta
-    std::cout << "Reducing domains based on TIE structure" << std::endl;
-}
 
 int main(int argc, char* argv[]){
-
 #ifdef PRINT_MATCHES
 	std::cout<<"DIRECTIVE PRINT_MATCHES is on\n";
 #endif
@@ -395,9 +288,13 @@ int match(
 
 	FileReader *fd = open_file(referencefile.c_str(), filetype);
 	if(fd != NULL){
-
-
-    
+#ifdef PRINT_MATCHES
+		//if you want to print found matches on screen
+		MatchListener* matchListener=new ConsoleMatchListener();
+#else
+		//do not print matches
+		MatchListener* matchListener=new EmptyMatchListener();
+#endif
 
 		int i=0;
 		bool rreaded = true;
@@ -456,13 +353,8 @@ int match(
 #ifdef REDUCE_EDGES
 						DomainReduction dr(*query, domains, edomains, rrg->nof_nodes);
 						std::cout<<"edomain reduction\n";
-						int* path = (int*)malloc((PATH_LENGTH + 1) * sizeof(int));
-						for (int start = 0; start < query->nof_nodes; start++) {
-    						path[0] = start;
-    						path_reduction(path, 1, PATH_LENGTH, domains, query, rrg);
-						}
-						free(path);
-
+						dr.reduce_by_paths(PATH_LENGTH);
+						//dr.reduce_by_paths(query->nof_nodes+1);
 						std::cout<<"edomain refinement\n";
 						dr.final_refinement();
 						std::cout<<"edomain done\n";
@@ -672,8 +564,3 @@ int match(
 
 	return 0;
 };
-
-
-
-
-
