@@ -119,6 +119,63 @@ Br <br>
 0 3 k<br>
 0 2 a<br>
 
+
+### Output domains format
+In this version, **ArcMatch** prints the state of node and edge domains after the calling of the required reducion procedures. Every version of **ARcMatch** calls a different combinaiton fo reduciton rpcoedure, node and edges are reducted by means of arc-consistency and the **ArcMatch**-specific path-based reduction techniques. Both techniques can be run until convergence or not, or by calling the domain refine procedure after the modification of an edge domain. 
+
+Please, refer to the following table to understand which compiled version runs a specific techniques.
+
+The fearures of **ArcMatch** are the following ones:
+- NS: the variable ordering is performed by also using measures N4 and N5  (see Sect. 3.2).
+- ED: the search process is driven by the domain graph. Thus, candidates are extracted from edge domains (see Sect. 3.3). However, no dynamic parent selection is performed. Parents are chosen statically before the search process begins as in Bonnici et al. (2013).
+- DY: as for ED but dynamic parent selection is enabled (see Sect. 3.3).
+- VC: arc consistency is applied to vertex domains until convergence (see Sect. 2.3.2).
+- RE: apply path reduction procedure (PathReduction) as it is described in Sect. 3.1, but disable the call to the function RefineDomains, which reduces edge domains.
+- RR: reduce edge domains by also enabling RefineDomains
+- PV: enable the management of peripheral vertices by using the procedure described in Sect. 3.2.1.
+
+<br>
+
+
+|   |NS |ED |DY |VC |RE |RR |PV |
+|-|-|-|-|-|-|-|-|
+|ArcMatch-1  | | | | | | | | 
+|ArcMatch-2  | |X | | | | | | 
+|ArcMatch-3  | |X |X | | | | | 
+|ArcMatch-4  |X |X |X | | | | |
+|ArcMatch-5  |X |X |X | |X | | |
+|ArcMatch-6  |X |X |X | | | |X |
+|ArcMatch-7  |X |X |X | |X | |X |
+|ArcMatch-8  | | | |X | | | |
+|ArcMatch-9  | |X | |X | | | | 
+|ArcMatch-10  | |X |X |X | | | |
+|ArcMatch-11  |X |X |X |X | | | |
+|ArcMatch-12  |X |X |X |X |X | | |
+|ArcMatch-13  |X |X |X |X | | |X |
+|ArcMatch-14  |X |X |X |X |X | |X |
+|ArcMatch-15  |X |X |X |X |X |X | |
+|ArcMatch-16  |X |X |X |X |X |X |X |
+<br>
+
+
+After thre reduction, domains are printed in the following format:
+>node domain node_id:number_of_nodes_in_this_domain: _list_of_node_ids_in_this_domain<br>
+>...<br>
+>edge_domain: edge_tuple: edge_id:number_of_edges_in_this_domains<br>
+>list_of_edges_in_this_domain<br>
+
+An example is reported in what follows:
+>node domain 0:1: 0<br>
+>node domain 1:3: 1 2 3<br>
+>node domain 2:2: 2 3<br>
+>edge domain: 0-2:eid 0:2<br>
+>(0,3)(0,2)<br>
+>edge domain: 0-2:eid 1:2<br>
+>(0,3)(0,2)<br>
+>edge domain: 0-1:eid 2:3<br>
+>(0,3)(0,2)(0,1) <br>
+
+
 ### Output match format
 When the print of matches is enabled, a basic behaviour of the tool is to print one match per line.
 The line is prefixed by `M:`.

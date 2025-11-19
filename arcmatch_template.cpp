@@ -451,6 +451,7 @@ int match(
 						print_domains(*query, *rrg, domains,edomains);
 						print_domains_extended(*query, *rrg, domains,edomains);
 #endif
+						print_domains_extended(*query, *rrg, domains,edomains);
 
 #ifdef MDEBUG
 	mama->print();
@@ -462,6 +463,7 @@ int match(
 	std::cout<<"solving...\n";
 #endif
 						//prepare the matching phase
+						/*
 						Solver* solver;
 						switch(matchtype){
 						case MT_MONO:
@@ -513,6 +515,7 @@ int match(
 						matchcount += solver->matchcount;
 
 						delete solver;
+						*/
 						delete mama;
 #ifdef MDEBUG
 	std::cout<<"done\n";
