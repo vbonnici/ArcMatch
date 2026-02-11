@@ -134,8 +134,7 @@ However, many of the executables use a particular technique that is able to find
 For this reason, a query vertex can be mapped to a list of target vertices on the same line.
 the list of target vertices is reported by using squared brackets.
 
-An example in which, the query vertex 1 is mapped to three target vertices is the following one:
-An example with a 3-vertices query in which the query vertex 0 is mapped to the target vertex 120 is the following one:
+An example with a 3-vertices query in which the query vertex 0 is mapped to the target vertex 120 , and vertex 1 is mapped to three different target vertices at once, is the following one:
 > M:{(0,120),(2,130),(1,[140,144,142])}
 
 The order within the list of target vertices is not ensured.
