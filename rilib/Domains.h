@@ -397,8 +397,8 @@ class DomainReduction {
         std::cout << "Starting verify_neighbor() at " << qnode << ", " << cnode << std::endl;
         std::cout << "Query: "; for (int i = 0; i <= q_level; i++) { std::cout << q_dfs[i] << ", "; } std::cout << std::endl;
         std::cout << "Query neighbor size: " << query.out_adj_sizes[qnode] << std::endl;
-        bool *c_visited = new bool[query.nof_nodes];
-        for (int i = 0; i < query.nof_nodes; i++) {
+        bool *c_visited = new bool[nof_target_nodes];
+        for (int i = 0; i < nof_target_nodes; i++) {
             c_visited[i] = false;
         }
         bool found = verify_neighbor_dfs(qnode, cnode, c_visited, 0);
@@ -429,8 +429,8 @@ class DomainReduction {
     }
 
     bool verify_neighbor(int *q_dfs, int q_level, int qnode, int cnode) {
-        bool *c_visited = new bool[query.nof_nodes];
-        for (int i = 0; i < query.nof_nodes; i++) {
+        bool *c_visited = new bool[nof_target_nodes];
+        for (int i = 0; i < nof_target_nodes; i++) {
             c_visited[i] = false;
         }
         bool found = verify_neighbor_dfs(qnode, cnode, c_visited, 0);
