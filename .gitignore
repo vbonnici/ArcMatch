@@ -104,3 +104,5 @@ arcmatch-first
 arcmatch-lt-first
 arcmatch-lt-print
 arcmatch-print
+arcmatch-fork
+arcmatch-lt-fork
