@@ -365,80 +365,59 @@ class DomainReduction {
         return true;
     };
 
-#ifdef VERIFY_NEIGHBOR
-#ifdef VERIFY_NEIGHBOR_PRINT
-    bool verify_neighbor_dfs(int qnode, int cnode, bool *c_visited, int q_adji = 0) {
-        if (q_adji == query.out_adj_sizes[qnode]) {
-            std::cout << "\tReturning TRUE" << std::endl;
-            return true;
+#ifdef VERIFY_FORK
+    bool verify_fork(int *q_dfs, int q_level, int qnode, int cnode, bool *c_visited) {
+        bool *q_visited = new bool[query.nof_nodes];
+        for (int i = 0; i < query.nof_nodes; i++) {
+            q_visited[i] = false;
         }
-        bool found = false;
-        int n = query.out_adj_list[qnode][q_adji];
-        unordered_edge_set eset = edge_domains.domains[edge_domains.pattern_out_adj_eids[qnode][q_adji]];
-        std::cout << "\tqnode[" << n << "] Eset size: " << eset.size() << std::endl;
-        for (unordered_edge_set::iterator eit = eset.begin(); eit != eset.end(); eit++) {
-            std::cout << "\t\tFirst " << cnode << ", " << eit->first << std::endl;
-            if ((eit->first == cnode) && (!c_visited[eit->second])) {
-                std::cout << "\t\t\tFind neighbor " << eit->second << std::endl; 
-                c_visited[eit->second] = true;
-                found |= verify_neighbor_dfs(qnode, cnode, c_visited, q_adji + 1);
-                c_visited[eit->second] = false;
-                if (found) {
+        for (int i = 0; i <= q_level; i++) {
+            q_visited[q_dfs[i]] = true;
+        }
+        int fork_index = 0;
+        int fork_size = 0;
+        unordered_edge_set::iterator *fork_its = new unordered_edge_set::iterator[query.out_adj_sizes[qnode]];
+        int *fork_its_index = new int[query.out_adj_sizes[qnode]];
+        for (int i = 0; i < query.out_adj_sizes[qnode]; i++) {
+            if (q_visited[query.out_adj_list[qnode][i]]) {
+                continue;
+            }
+            fork_its[fork_size] = edge_domains.domains[edge_domains.pattern_out_adj_eids[qnode][i]].begin();
+            fork_its_index[fork_size] = i;
+            fork_size++;
+        }
+        while (fork_index >= 0) {
+            if (fork_index == fork_size) {
+                for (int i = 0; i < fork_size; i++) {
+                    c_visited[fork_its[i]->second] = false;
+                }
+                break;
+            }
+
+            for (; fork_its[fork_index] != edge_domains.domains[edge_domains.pattern_out_adj_eids[qnode][fork_its_index[fork_index]]].end(); fork_its[fork_index]++) {
+                if ((cnode == fork_its[fork_index]->first) && (!c_visited[fork_its[fork_index]->second])) {
+                    c_visited[fork_its[fork_index]->second] = true;
                     break;
                 }
+            }
+
+            if (fork_its[fork_index] == edge_domains.domains[edge_domains.pattern_out_adj_eids[qnode][fork_its_index[fork_index]]].end()) {
+                fork_its[fork_index] = edge_domains.domains[edge_domains.pattern_out_adj_eids[qnode][fork_its_index[fork_index]]].begin();
+                if (fork_index > 0) {
+                    c_visited[fork_its[fork_index - 1]->second] = false;
+                    fork_its[fork_index - 1]++;
+                }
+                fork_index--;
             } else {
-                std::cout << "\t\t\tNot found neighbor " << eit->second << std::endl;
+                fork_index++;
             }
         }
-        return found;
+        delete[] q_visited;
+        delete[] fork_its;
+        delete[] fork_its_index;
+        return fork_index == fork_size;
     }
-
-    bool verify_neighbor(int *q_dfs, int q_level, int qnode, int cnode) {
-        std::cout << "Starting verify_neighbor() at " << qnode << ", " << cnode << std::endl;
-        std::cout << "Query: "; for (int i = 0; i <= q_level; i++) { std::cout << q_dfs[i] << ", "; } std::cout << std::endl;
-        std::cout << "Query neighbor size: " << query.out_adj_sizes[qnode] << std::endl;
-        bool *c_visited = new bool[nof_target_nodes];
-        for (int i = 0; i < nof_target_nodes; i++) {
-            c_visited[i] = false;
-        }
-        bool found = verify_neighbor_dfs(qnode, cnode, c_visited, 0);
-        std::cout << qnode  << ", " << cnode << " return " << (found ? "true" : "false") << std::endl;
-        delete[] c_visited;
-        return found;
-    }
-#endif // VERIFY_NEIGHBOR_PRINT
-
-#ifndef VERIFY_NEIGHBOR_PRINT
-    bool verify_neighbor_dfs(int qnode, int cnode, bool *c_visited, int q_adji = 0) {
-        if (q_adji == query.out_adj_sizes[qnode]) {
-            return true;
-        }
-        bool found = false;
-        unordered_edge_set eset = edge_domains.domains[edge_domains.pattern_out_adj_eids[qnode][q_adji]];
-        for (unordered_edge_set::iterator eit = eset.begin(); eit != eset.end(); eit++) {
-            if ((eit->first == cnode) && (!c_visited[eit->second])) {
-                c_visited[eit->second] = true;
-                found |= verify_neighbor_dfs(qnode, cnode, c_visited, q_adji + 1);
-                c_visited[eit->second] = false;
-                if (found) {
-                    break;
-                }
-            }
-        }
-        return found;
-    }
-
-    bool verify_neighbor(int *q_dfs, int q_level, int qnode, int cnode) {
-        bool *c_visited = new bool[nof_target_nodes];
-        for (int i = 0; i < nof_target_nodes; i++) {
-            c_visited[i] = false;
-        }
-        bool found = verify_neighbor_dfs(qnode, cnode, c_visited, 0);
-        delete[] c_visited;
-        return found;
-    }
-#endif // VERIFY_NEIGHBOR_PRINT
-#endif // VERIFY_NEIGHBOR
+#endif // VERIFY_FORK
 
     bool verify_path_dfs(int *q_dfs, int *q_dfs_adji, int q_level, int *c_dfs, bool *c_visited, int c_level, bool circle, bool is_lp) {
         if (c_level == q_level - 1) {
@@ -453,22 +432,22 @@ class DomainReduction {
             } else {
                 unordered_edge_set eset = edge_domains.domains[edge_domains.pattern_out_adj_eids[q_dfs[c_level]][q_dfs_adji[c_level + 1]]];
                 for (unordered_edge_set::iterator eit = eset.begin(); eit != eset.end(); eit++) {
-#ifdef VERIFY_NEIGHBOR
+#ifdef VERIFY_FORK
                     if ((eit->first == c_dfs[c_level]) && (!c_visited[eit->second])) {
                         if (is_lp) {
-                            if (verify_neighbor(q_dfs, q_level, q_dfs[q_level], eit->second)) {
+                            if (verify_fork(q_dfs, q_level, q_dfs[q_level], eit->second, c_visited)) {
                                 return true;
                             }
                         } else {
                             return true;
                         }
                     }
-#endif // VERIFY_NEIGHBOR
-#ifndef VERIFY_NEIGHBOR
+#endif // VERIFY_FORK
+#ifndef VERIFY_FORK
                     if ((eit->first == c_dfs[c_level]) && (!c_visited[eit->second])) {
                         return true;
                     }
-#endif // DVERIFY_NEIGHBOR
+#endif // DVERIFY_FORK
                 }
                 return false;
             }
